@@ -34,6 +34,10 @@ public class ModuleModel implements Serializable {
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
+    @JsonFormat( shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @Column(nullable = false)
+    private LocalDateTime lastUpdateDate;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private CourseModel course;
