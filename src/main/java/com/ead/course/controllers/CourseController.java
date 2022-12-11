@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -68,8 +71,14 @@ public class CourseController {
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec, @PageableDefault(
             page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<CourseModel> courses = courseService.findAll(spec, pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(courses);
+        Page<CourseModel> pageCourses = courseService.findAll(spec, pageable);
+
+        if(!pageCourses.isEmpty()) {
+            for(CourseModel course : pageCourses.toList()) {
+                course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(pageCourses);
     }
 
     @GetMapping("/{courseId}")
@@ -77,6 +86,9 @@ public class CourseController {
         var course = courseService.findById(courseId);
         if(!course.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found!");
+        }  else {
+            course.get().add(linkTo(methodOn(CourseController.class)
+                    .getOneCourse(course.get().getCourseId())).withSelfRel());
         }
         return ResponseEntity.status(HttpStatus.OK).body(course.get());
     }

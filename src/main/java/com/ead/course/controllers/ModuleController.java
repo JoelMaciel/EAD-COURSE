@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +85,13 @@ public class ModuleController {
             page = 0, size = 10, sort = "moduleId", direction = Sort.Direction.ASC) Pageable pageable) {
         var modulePage = moduleService.findAllByCourse(
                 SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable);
+
+        if(!modulePage.isEmpty()) {
+            for(ModuleModel module : modulePage.toList()) {
+                module.add(linkTo(methodOn(ModuleController.class).getOneModule(
+                        module.getModuleId(), module.getCourse().getCourseId())).withSelfRel());
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(modulePage);
     }
 
@@ -91,6 +101,10 @@ public class ModuleController {
         Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
         if (!moduleModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course");
+        } else {
+            moduleModelOptional.get().add(linkTo(methodOn(ModuleController.class).getOneModule(
+                    moduleModelOptional.get().getModuleId(), moduleModelOptional.get().getCourse().getCourseId()
+            )).withSelfRel());
         }
         var module = moduleModelOptional.get();
         return ResponseEntity.status(HttpStatus.OK).body(module);

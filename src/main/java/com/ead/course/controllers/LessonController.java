@@ -16,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -82,6 +86,13 @@ public class LessonController {
             page = 0, size = 10, sort = "lessonId", direction = Sort.Direction.ASC) Pageable pageable) {
        var pageLessons =  lessonService.findAllModule(
                SpecificationTemplate.lessonModuleId(moduleId).and(spec), pageable);
+       if(!pageLessons.isEmpty()) {
+           for(LessonModel lesson : pageLessons.toList()) {
+               lesson.add(linkTo(methodOn(LessonController.class).getOneLesson(
+                       lesson.getLessonId(), lesson.getModule().getModuleId())).withSelfRel());
+           }
+       }
+
         return ResponseEntity.status(HttpStatus.OK).body(pageLessons);
 
     }
@@ -92,6 +103,10 @@ public class LessonController {
         Optional<LessonModel> lessonModelOptional = lessonService.findLessonIntoModule(moduleId, lessonId);
         if(!lessonModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lesson not found for this module!");
+        } else  {
+            lessonModelOptional.get().add(linkTo(methodOn(LessonController.class).getOneLesson(
+                    lessonModelOptional.get().getLessonId(), lessonModelOptional.get().getModule().getModuleId()
+            )).withSelfRel());
         }
         return ResponseEntity.status(HttpStatus.OK).body(lessonModelOptional.get());
     }
