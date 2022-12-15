@@ -59,6 +59,10 @@ public class CourseModel extends RepresentationModel<CourseModel> implements Ser
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<ModuleModel> modules;
+
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private Set<CourseUserModel> coursesUsers;
 }
 
 
