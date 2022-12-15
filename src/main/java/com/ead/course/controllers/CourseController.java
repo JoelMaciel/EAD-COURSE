@@ -15,15 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Log4j2
 @RestController
@@ -81,15 +80,30 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec, @PageableDefault(
-            page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<CourseModel> pageCourses = courseService.findAll(spec, pageable);
-
-        if(!pageCourses.isEmpty()) {
-            for(CourseModel course : pageCourses.toList()) {
-                course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
+            page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
+                                                @RequestParam(required = false) UUID userId) {
+        if (userId != null) {
+            Page<CourseModel> pageCourses = courseService.findAll(
+                    SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+            if(!pageCourses.isEmpty()) {
+                for(CourseModel course : pageCourses.toList()) {
+                    course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
+                }
             }
+            return ResponseEntity.status(HttpStatus.OK).body(pageCourses);
+        } else  {
+            Page<CourseModel> pageCourses = courseService.findAll(spec, pageable);
+            if(!pageCourses.isEmpty()) {
+                for(CourseModel course : pageCourses.toList()) {
+                    course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
+                }
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(pageCourses);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(pageCourses);
+
+
+
+
     }
 
     @GetMapping("/{courseId}")
