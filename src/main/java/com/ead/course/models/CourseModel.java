@@ -60,7 +60,7 @@ public class CourseModel extends RepresentationModel<CourseModel> implements Ser
     @Fetch(FetchMode.SUBSELECT)
     private Set<ModuleModel> modules;
 
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     private Set<CourseUserModel> coursesUsers;
 }
