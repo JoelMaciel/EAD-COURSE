@@ -51,8 +51,8 @@ public class CourseController {
     public ResponseEntity<Object> deleteCourse(@PathVariable(value = "courseId") UUID courseId) {
         log.debug("DELETE deleteCourse courseId received {} ", courseId);
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
-        if(!courseModelOptional.isPresent()) {
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
+        if (!courseModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
         courseService.delete(courseModelOptional.get());
         log.debug("DELETE deleteCourse courseId deleted {} ", courseId);
@@ -66,7 +66,7 @@ public class CourseController {
                                                @RequestBody @Valid CourseDto courseDto) {
         log.debug("PUT updateCourse courseDto received {} ", courseDto.toString());
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
-        if(!courseModelOptional.isPresent()) {
+        if (!courseModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found!");
         }
         var courseModel = courseModelOptional.get();
@@ -81,20 +81,20 @@ public class CourseController {
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec, @PageableDefault(
             page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
-                                                @RequestParam(required = false) UUID userId) {
+                                                           @RequestParam(required = false) UUID userId) {
         if (userId != null) {
             Page<CourseModel> pageCourses = courseService.findAll(
                     SpecificationTemplate.courseUserId(userId).and(spec), pageable);
-            if(!pageCourses.isEmpty()) {
-                for(CourseModel course : pageCourses.toList()) {
+            if (!pageCourses.isEmpty()) {
+                for (CourseModel course : pageCourses.toList()) {
                     course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
                 }
             }
             return ResponseEntity.status(HttpStatus.OK).body(pageCourses);
-        } else  {
+        } else {
             Page<CourseModel> pageCourses = courseService.findAll(spec, pageable);
-            if(!pageCourses.isEmpty()) {
-                for(CourseModel course : pageCourses.toList()) {
+            if (!pageCourses.isEmpty()) {
+                for (CourseModel course : pageCourses.toList()) {
                     course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
                 }
             }
@@ -102,16 +102,14 @@ public class CourseController {
         }
 
 
-
-
     }
 
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getOneCourse(@PathVariable(value = "courseId") UUID courseId) {
         var course = courseService.findById(courseId);
-        if(!course.isPresent()) {
+        if (!course.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found!");
-        }  else {
+        } else {
             course.get().add(linkTo(methodOn(CourseController.class)
                     .getOneCourse(course.get().getCourseId())).withSelfRel());
         }
