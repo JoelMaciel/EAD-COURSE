@@ -1,5 +1,8 @@
 server:
   port: 8082
+  servlet:
+    context-path: '/ead-course/'
+
 spring:
   application:
     name: ead-course-service
