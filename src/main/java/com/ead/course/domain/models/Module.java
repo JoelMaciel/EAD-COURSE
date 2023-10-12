@@ -2,8 +2,7 @@ package com.ead.course.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 
@@ -13,7 +12,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Builder(toBuilder = true)
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Module implements Serializable {
