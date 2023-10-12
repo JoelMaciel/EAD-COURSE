@@ -15,6 +15,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+        ddl-auto: none
         jdbc:
           lob.non-contextual-creation : true
 
