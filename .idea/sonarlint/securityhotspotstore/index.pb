@@ -60,3 +60,11 @@ z
 Jsrc/main/java/com/ead/course/api/exceptionhandler/ApiExceptionHandler.java,6/6/66c4323654bc46b09c2d9c325c33e968eb67004c
 m
 =src/main/java/com/ead/course/api/config/ValidationConfig.java,e/c/ecc6a320f01c2cb6839f5c1c8f77fbf7b8dacbab
+p
+@src/main/java/com/ead/course/api/dtos/request/ModuleRequest.java,9/9/996be015eb2dde0fd00599a1703c54c443cb0881
+m
+=src/main/java/com/ead/course/api/dtos/response/ModuleDTO.java,2/e/2e08e34de2de0b84eba7e4aad4a4ae5df3cd6ad3
+…
+Usrc/main/java/com/ead/course/domain/exceptions/ModuleIntoCourseNotFoundException.java,4/1/41e4c2ea330fe3cf2ed0ed428f09d46645d7a39e
+r
+Bsrc/main/java/com/ead/course/api/controllers/ModuleController.java,2/c/2c451b4ceb228359ab406b91c60d59e50daee456
