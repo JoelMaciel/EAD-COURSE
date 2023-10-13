@@ -68,3 +68,9 @@ p
 @src/main/java/com/ead/course/api/dtos/request/ModuleRequest.java,9/9/996be015eb2dde0fd00599a1703c54c443cb0881
 r
 Bsrc/main/java/com/ead/course/api/controllers/ModuleController.java,2/c/2c451b4ceb228359ab406b91c60d59e50daee456
+o
+?src/main/java/com/ead/course/domain/services/LessonService.java,6/e/6e13a310844f6c6ca777528c078cc3f49f215ce3
+h
+8src/test/java/com/ead/course/CourseApplicationTests.java,c/9/c9937c093041f8cdf26e233fd601db553e16d2ac
+|
+Lsrc/test/java/com/ead/course/domain/services/impl/CourseServiceImplTest.java,f/5/f517bf3fdacc32c9c43ad8d5bf4d84986b75dcec
