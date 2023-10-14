@@ -58,7 +58,6 @@ public class CourseServiceImpl implements CourseService {
         return CourseDTO.toDTO(courseRepository.save(course));
     }
 
-
     @Transactional
     @Override
     public void delete(UUID courseId) {
@@ -71,5 +70,4 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException(courseId));
     }
-
 }
