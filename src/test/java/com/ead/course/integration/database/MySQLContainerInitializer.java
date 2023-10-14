@@ -1,4 +1,4 @@
-package com.ead.course;
+package com.ead.course.integration.database;
 
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
