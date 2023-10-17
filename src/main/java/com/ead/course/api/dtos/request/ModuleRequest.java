@@ -21,7 +21,7 @@ public class ModuleRequest {
     public static Module toEntity(ModuleRequest request) {
         return Module.builder()
                 .title(request.getTitle())
-                .description(request.description)
+                .description(request.getDescription())
                 .build();
     }
 }

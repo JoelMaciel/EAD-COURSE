@@ -2,6 +2,7 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.containers.DatabaseContainerConfiguration;
 import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
@@ -13,11 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
@@ -30,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Testcontainers
+@Import(DatabaseContainerConfiguration.class)
 class CourseServiceImplIT {
 
     public static final String MSG_INVALID_COURSEID = "There is no course registered with UUID %s";
@@ -39,19 +38,6 @@ class CourseServiceImplIT {
     private CourseRepository courseRepository;
     private CourseRequest courseRequest;
     private Course course;
-
-    @Container
-    public static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:5.7")
-            .withDatabaseName("ead_course_test")
-            .withUsername("root")
-            .withPassword("root");
-
-    @DynamicPropertySource
-    public static void setDataSourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysqlContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mysqlContainer::getUsername);
-        registry.add("spring.datasource.password", mysqlContainer::getPassword);
-    }
 
     @BeforeEach
     void setUp() {

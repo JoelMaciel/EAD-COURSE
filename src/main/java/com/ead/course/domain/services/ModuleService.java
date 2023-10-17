@@ -11,7 +11,7 @@ public interface ModuleService {
 
     ModuleDTO findByModule(UUID courseId, UUID moduleId);
 
-    List<Module> findAllByCourse(UUID courseId);
+    List<ModuleDTO> findAllModulesByCourse(UUID courseId);
 
     ModuleDTO save(UUID courseId, ModuleRequest request);
 

@@ -20,8 +20,8 @@ public class ModuleController {
     private final ModuleService moduleService;
 
     @GetMapping
-    public List<Module> getAllModules(@PathVariable UUID courseId) {
-        return moduleService.findAllByCourse(courseId);
+    public List<ModuleDTO> getAllModules(@PathVariable UUID courseId) {
+        return moduleService.findAllModulesByCourse(courseId);
     }
 
     @GetMapping("/{moduleId}")
