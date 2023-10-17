@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +25,11 @@ public class ModuleServiceImpl implements ModuleService {
     private final CourseService courseService;
 
     @Override
-    public List<Module> findAllByCourse(UUID courseId) {
-        return moduleRepository.findByCourseCourseId(courseId);
+    public List<ModuleDTO> findAllModulesByCourse(UUID courseId) {
+        List<Module> moduleList = moduleRepository.findByCourseCourseId(courseId);
+        return moduleList.stream()
+                .map(ModuleDTO::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -67,6 +71,4 @@ public class ModuleServiceImpl implements ModuleService {
         return moduleRepository.findByCourseCourseIdAndModuleId(courseId, moduleId)
                 .orElseThrow(() -> new ModuleIntoCourseNotFoundException(courseId, moduleId));
     }
-
-
 }
