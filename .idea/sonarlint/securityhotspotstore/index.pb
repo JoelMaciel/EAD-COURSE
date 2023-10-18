@@ -86,3 +86,15 @@ b
 2src/test/java/com/ead/course/utils/TestHelper.java,d/1/d154949d8a9d2cff722ef8c4aa0c3e89bde184b5
 z
 Jsrc/test/java/com/ead/course/domain/services/impl/ModuleServiceImplIT.java,8/f/8f9482316227dabac7af90beeea5bff688b61ad6
+k
+;src/main/java/com/ead/course/domain/enums/CourseStatus.java,5/3/530ab751f25f1ff691041f041ff15ac7d0fce8e4
+j
+:src/main/java/com/ead/course/domain/enums/CourseLevel.java,f/f/ff90815c9904da0aecdd180d5a328bb8c2216120
+p
+@src/main/java/com/ead/course/api/dtos/request/LessonRequest.java,9/f/9f8f049126f332140825076fad30c160019b9ce8
+r
+Bsrc/main/java/com/ead/course/api/controllers/LessonController.java,f/e/fee84cbfe6eb0a859396f27b09666aa6f3951f1f
+{
+Ksrc/main/java/com/ead/course/domain/exceptions/ModuleNotFoundException.java,6/3/6397ff6652ad98db1f49b4b359097a6252c39e57
+m
+=src/main/java/com/ead/course/api/dtos/response/LessonDTO.java,c/c/cc64af142ee21888abe3cf67b977fc4914437c0a

@@ -3,6 +3,7 @@ package com.ead.course.domain.services.impl;
 import com.ead.course.api.dtos.request.ModuleRequest;
 import com.ead.course.api.dtos.response.ModuleDTO;
 import com.ead.course.domain.exceptions.ModuleIntoCourseNotFoundException;
+import com.ead.course.domain.exceptions.ModuleNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.models.Module;
 import com.ead.course.domain.repositories.ModuleRepository;
@@ -70,5 +71,11 @@ public class ModuleServiceImpl implements ModuleService {
     public Module findModuleIntoCourse(UUID courseId, UUID moduleId) {
         return moduleRepository.findByCourseCourseIdAndModuleId(courseId, moduleId)
                 .orElseThrow(() -> new ModuleIntoCourseNotFoundException(courseId, moduleId));
+    }
+
+    @Override
+    public Module searchByModule(UUID moduleId) {
+        return moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ModuleNotFoundException(moduleId));
     }
 }

@@ -21,4 +21,6 @@ public interface ModuleService {
 
     Module findModuleIntoCourse(UUID courseId, UUID moduleId);
 
+    Module searchByModule(UUID moduleId);
+
 }
