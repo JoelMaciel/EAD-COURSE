@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,8 +18,8 @@ import java.util.UUID;
 @Data
 @Builder(toBuilder = true)
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Module implements Serializable {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class Module extends RepresentationModel<Module> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Type(type = "uuid-char")

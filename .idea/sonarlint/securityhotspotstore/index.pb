@@ -98,3 +98,9 @@ Bsrc/main/java/com/ead/course/api/controllers/LessonController.java,f/e/fee84cb
 Ksrc/main/java/com/ead/course/domain/exceptions/ModuleNotFoundException.java,6/3/6397ff6652ad98db1f49b4b359097a6252c39e57
 m
 =src/main/java/com/ead/course/api/dtos/response/LessonDTO.java,c/c/cc64af142ee21888abe3cf67b977fc4914437c0a
+K
+.github/workflows/maven.yml,c/7/c709f6995f23dae0da365bff70068f8288fa89e0
+k
+;src/main/java/com/ead/course/api/config/ResolverConfig.java,2/4/247a3d80e73f339e465817868dfd06bfcf96f1a7
+y
+Isrc/main/java/com/ead/course/api/specification/SpecificationTemplate.java,5/1/51de998cfbaaa64558270e279483b072be545831

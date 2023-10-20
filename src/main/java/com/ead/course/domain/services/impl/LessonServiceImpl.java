@@ -1,5 +1,6 @@
 package com.ead.course.domain.services.impl;
 
+import com.ead.course.api.controllers.LessonController;
 import com.ead.course.api.dtos.request.LessonRequest;
 import com.ead.course.api.dtos.response.LessonDTO;
 import com.ead.course.domain.exceptions.LessonIntoModuleNotFoundException;
@@ -9,13 +10,16 @@ import com.ead.course.domain.repositories.LessonRepository;
 import com.ead.course.domain.services.LessonService;
 import com.ead.course.domain.services.ModuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +28,10 @@ public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final ModuleService moduleService;
 
-    @Override
-    public List<LessonDTO> findAll(UUID moduleId) {
-        List<Lesson> lessonList = lessonRepository.findByModule_ModuleId(moduleId);
-        return lessonList.stream()
-                .map(LessonDTO::toDTO)
-                .collect(Collectors.toList());
+    public Page<LessonDTO> findAll(Specification<Lesson> spec, Pageable pageable) {
+        Page<Lesson> lessonPages = findAllLessonSpec(spec, pageable);
+        addHateoasLinks(lessonPages);
+        return lessonPages.map(LessonDTO::toDTO);
     }
 
     @Override
@@ -61,7 +63,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     @Transactional
-    public void delele(UUID moduleId, UUID lessonId) {
+    public void delete(UUID moduleId, UUID lessonId) {
         Lesson lesson = findLessonIntoModule(moduleId, lessonId);
         lessonRepository.delete(lesson);
     }
@@ -71,6 +73,20 @@ public class LessonServiceImpl implements LessonService {
         return lessonRepository.findByModuleModuleIdAndLessonId(moduleId, lessonId)
                 .orElseThrow(() -> new LessonIntoModuleNotFoundException(moduleId, lessonId));
 
+    }
+
+    @Override
+    public Page<Lesson> findAllLessonSpec(Specification<Lesson> spec, Pageable pageable) {
+        return lessonRepository.findAll(spec, pageable);
+    }
+
+    private void addHateoasLinks(Page<Lesson> lessons) {
+        if (!lessons.isEmpty()) {
+            for (Lesson lesson : lessons) {
+                lesson.add(linkTo(methodOn(LessonController.class)
+                        .getOneLesson(lesson.getModule().getModuleId(), lesson.getLessonId())).withSelfRel());
+            }
+        }
     }
 
 }

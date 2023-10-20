@@ -2,13 +2,17 @@ package com.ead.course.api.controllers;
 
 import com.ead.course.api.dtos.request.LessonRequest;
 import com.ead.course.api.dtos.response.LessonDTO;
+import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.domain.services.LessonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,8 +24,9 @@ public class LessonController {
 
 
     @GetMapping
-    public List<LessonDTO> getAllLessons(@PathVariable UUID moduleId) {
-        return lessonService.findAll(moduleId);
+    public Page<LessonDTO> getAllLessons(@PathVariable UUID moduleId , SpecificationTemplate.LessonSpec spec,
+                                         @PageableDefault(page = 0, size = 10, sort = "lessonId", direction = Sort.Direction.ASC) Pageable pageable) {
+        return lessonService.findAll(SpecificationTemplate.lessonModuleId(moduleId).and(spec), pageable);
     }
 
     @GetMapping("/{lessonId}")
@@ -44,7 +49,7 @@ public class LessonController {
     @DeleteMapping("/{lessonId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLesson(@PathVariable UUID moduleId, @PathVariable UUID lessonId) {
-        lessonService.delele(moduleId, lessonId);
+        lessonService.delete(moduleId, lessonId);
     }
 
 }

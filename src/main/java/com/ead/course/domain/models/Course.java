@@ -4,6 +4,7 @@ import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.RepresentationModel;
 import lombok.*;
 import org.hibernate.annotations.*;
 
@@ -19,8 +20,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Course implements Serializable {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class Course extends RepresentationModel<Course> implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
