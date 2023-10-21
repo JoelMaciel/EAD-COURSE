@@ -19,7 +19,7 @@ public class LessonDTO extends RepresentationModel<LessonDTO> {
     private String title;
     private String description;
     private String videoUrl;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,  pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private LocalDateTime creationDate;
 
     public static LessonDTO toDTO(Lesson lesson) {
