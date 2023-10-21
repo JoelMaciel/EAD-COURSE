@@ -239,9 +239,4 @@ class LessonServiceImplTest {
         assertEquals(actualMessage, expectedMessage);
         verify(lessonRepository, never()).delete(any(Lesson.class));
     }
-
-    @DisplayName("")
-    @Test
-    void findAllLessonSpec() {
-    }
 }
