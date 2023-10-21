@@ -55,7 +55,7 @@ class CourseServiceImplTest {
     @Test
     void givenListOfCourse_WhenCallingFindAll_ThenShouldReturnListCoursesSuccessfully() {
         when(courseRepository.findAll()).thenReturn(Arrays.asList(courseOne, courseTwo));
-        List<CourseDTO> courseDTOS = courseService.findAll();
+        List<CourseDTO> courseDTOS = courseService.findAll(spec, pageable);
 
         assertNotNull(courseDTOS);
         assertEquals(2, courseDTOS.size());

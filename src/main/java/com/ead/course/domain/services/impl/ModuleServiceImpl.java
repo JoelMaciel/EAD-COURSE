@@ -1,21 +1,27 @@
 package com.ead.course.domain.services.impl;
 
+import com.ead.course.api.controllers.ModuleController;
 import com.ead.course.api.dtos.request.ModuleRequest;
 import com.ead.course.api.dtos.response.ModuleDTO;
 import com.ead.course.domain.exceptions.ModuleIntoCourseNotFoundException;
+import com.ead.course.domain.exceptions.ModuleNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.models.Module;
 import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.domain.services.CourseService;
 import com.ead.course.domain.services.ModuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +31,10 @@ public class ModuleServiceImpl implements ModuleService {
     private final CourseService courseService;
 
     @Override
-    public List<ModuleDTO> findAllModulesByCourse(UUID courseId) {
-        List<Module> moduleList = moduleRepository.findByCourseCourseId(courseId);
-        return moduleList.stream()
-                .map(ModuleDTO::toDTO)
-                .collect(Collectors.toList());
+    public Page<ModuleDTO> findAllModules(Specification<Module> spec, Pageable pageable) {
+        Page<Module> modulesPage = findAllModulesByCourse(spec, pageable);
+        addHateoasLinks(modulesPage);
+        return modulesPage.map(ModuleDTO::toDTO);
     }
 
     @Override
@@ -71,4 +76,25 @@ public class ModuleServiceImpl implements ModuleService {
         return moduleRepository.findByCourseCourseIdAndModuleId(courseId, moduleId)
                 .orElseThrow(() -> new ModuleIntoCourseNotFoundException(courseId, moduleId));
     }
+
+    @Override
+    public Module searchByModule(UUID moduleId) {
+        return moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ModuleNotFoundException(moduleId));
+    }
+
+    @Override
+    public Page<Module> findAllModulesByCourse(Specification<Module> spec, Pageable pageable) {
+        return moduleRepository.findAll(spec, pageable);
+    }
+
+    private void addHateoasLinks(Page<Module> modules) {
+        if (!modules.isEmpty()) {
+            for (Module module : modules) {
+                module.add(linkTo(methodOn(ModuleController.class)
+                        .getOneModule(module.getCourse().getCourseId(), module.getModuleId())).withSelfRel());
+            }
+        }
+    }
+
 }

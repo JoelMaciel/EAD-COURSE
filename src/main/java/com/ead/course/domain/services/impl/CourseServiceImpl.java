@@ -1,5 +1,6 @@
 package com.ead.course.domain.services.impl;
 
+import com.ead.course.api.controllers.CourseController;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
@@ -7,13 +8,17 @@ import com.ead.course.domain.models.Course;
 import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.services.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +27,10 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
 
     @Override
-    public List<CourseDTO> findAll() {
-        List<Course> courses = courseRepository.findAll();
-        return courses.stream()
-                .map(CourseDTO::toDTO)
-                .collect(Collectors.toList());
+    public Page<CourseDTO> findAll(Specification<Course> spec, Pageable pageable) {
+        Page<Course> courses = courseRepository.findAll(spec, pageable);
+        addHateoasLinks(courses);
+        return courses.map(CourseDTO::toDTO);
     }
 
     @Override
@@ -69,5 +73,14 @@ public class CourseServiceImpl implements CourseService {
     public Course searchById(UUID courseId) {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException(courseId));
+    }
+
+    private void addHateoasLinks(Page<Course> courses) {
+        if (!courses.isEmpty()) {
+            for (Course course : courses) {
+                course.add(linkTo(methodOn(CourseController.class)
+                        .getOneCourse(course.getCourseId())).withSelfRel());
+            }
+        }
     }
 }

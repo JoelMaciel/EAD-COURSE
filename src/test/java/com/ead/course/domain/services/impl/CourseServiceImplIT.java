@@ -85,7 +85,7 @@ class CourseServiceImplIT {
                 .build();
         courseRepository.save(course2);
 
-        List<CourseDTO> courseDTOS = courseService.findAll();
+        List<CourseDTO> courseDTOS = courseService.findAll(spec, pageable);
 
         assertNotNull(courseDTOS);
         assertEquals(2, courseDTOS.size());

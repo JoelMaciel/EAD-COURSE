@@ -3,6 +3,7 @@ package com.ead.course.api.dtos.response;
 import com.ead.course.domain.models.Module;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,20 +13,23 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ModuleDTO {
+public class ModuleDTO extends RepresentationModel<ModuleDTO> {
 
     private UUID moduleId;
     private String title;
     private String description;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,  pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private LocalDateTime creationDate;
 
     public static ModuleDTO toDTO(Module module) {
-        return ModuleDTO.builder()
+        ModuleDTO moduleDTO = ModuleDTO.builder()
                 .moduleId(module.getModuleId())
                 .title(module.getTitle())
                 .description(module.getDescription())
                 .creationDate(module.getCreationDate())
                 .build();
+
+        moduleDTO.add(module.getLinks());
+        return moduleDTO;
     }
 }
