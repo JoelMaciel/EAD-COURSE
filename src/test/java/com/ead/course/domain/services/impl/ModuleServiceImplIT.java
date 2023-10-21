@@ -2,6 +2,7 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.dtos.request.ModuleRequest;
 import com.ead.course.api.dtos.response.ModuleDTO;
+import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.containers.DatabaseContainerConfiguration;
 import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
@@ -18,6 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -85,22 +91,26 @@ class ModuleServiceImplIT {
     }
 
     @Test
-    @DisplayName("Given Course ID When Finding Modules Then Return List Of ModuleDTOs")
-    void givenCourseId_WhenFindingModules_ThenReturnListOfModuleDTOs() {
-        List<ModuleDTO> moduleDTOList = moduleService.findAllModulesByCourse(course.getCourseId());
+    @DisplayName("Given Course ID When Finding Modules Then Return Page Of ModuleDTOs")
+    void givenCourseId_WhenFindingModules_ThenReturnPageOfModuleDTOs() {
+        UUID courseId = course.getCourseId();
+        Specification<Module> spec = SpecificationTemplate.moduleCourseId(courseId);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("moduleId"));
 
-        assertNotNull(moduleDTOList);
-        assertFalse(moduleDTOList.isEmpty());
-        assertEquals(2, moduleDTOList.size());
+        Page<ModuleDTO> moduleDTOPage = moduleService.findAllModules(spec, pageable);
 
-        List<String> titles = moduleDTOList.stream()
+        assertNotNull(moduleDTOPage);
+        assertFalse(moduleDTOPage.isEmpty());
+        assertEquals(2, moduleDTOPage.getTotalElements());
+
+        List<String> titles = moduleDTOPage.stream()
                 .map(ModuleDTO::getTitle)
                 .collect(Collectors.toList());
 
         assertTrue(titles.contains(moduleRequest.getTitle()));
         assertTrue(titles.contains("Second Module Test"));
 
-        List<String> descriptions = moduleDTOList.stream()
+        List<String> descriptions = moduleDTOPage.stream()
                 .map(ModuleDTO::getDescription)
                 .collect(Collectors.toList());
 
