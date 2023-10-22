@@ -2,6 +2,7 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.containers.DatabaseContainerConfiguration;
 import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
@@ -15,10 +16,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,16 +43,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class CourseServiceImplIT {
 
     public static final String MSG_INVALID_COURSEID = "There is no course registered with UUID %s";
+    private static final String BASE_TEST_COURSE_NAME = "Test Course ";
+    private static final int PAGE_SIZE = 10;
     @Autowired
     private CourseServiceImpl courseService;
     @Autowired
     private CourseRepository courseRepository;
     private CourseRequest courseRequest;
     private Course course;
+    private Specification<Course> spec;
+    private Pageable pageable;
 
     @BeforeEach
     void setUp() {
-        String uniqueCourseName = "Test Course One " + System.currentTimeMillis();
+        String uniqueCourseName = BASE_TEST_COURSE_NAME + "SomeName " + System.currentTimeMillis();
+
+        spec = createCourseSpecification();
+
+
+        spec = createCourseSpecification();
+        pageable = PageRequest.of(0, PAGE_SIZE, Sort.by(Sort.Direction.ASC, "courseId"));
 
         courseService = new CourseServiceImpl(courseRepository);
 
@@ -66,31 +87,21 @@ class CourseServiceImplIT {
     }
 
     @Test
-    @DisplayName("Given Courses Exist When Calling FindAll Then Return List of CoursesDTOs Successfully")
-    void givenCoursesExist_WhenCallingFindAll_ThenReturnListOfCourses() {
-        courseRepository.save(course);
+    @DisplayName("Given Courses Exist When Calling FindAll Then Return Page of CoursesDTOs Successfully")
+    void givenCoursesExist_WhenCallingFindAll_ThenReturnPageOfCourses() {
+        Course savedCourse = courseRepository.save(course);
 
-        String uniqueCourseName2 = "Test Course Two " + System.currentTimeMillis();
-        CourseRequest courseRequest2 = CourseRequest.builder()
-                .name(uniqueCourseName2)
-                .description("Test Description Two")
-                .imageUrl("http://testimage2.com")
-                .courseStatus(CourseStatus.INPROGRESS)
-                .userInstructor(UUID.randomUUID())
-                .courseLevel(CourseLevel.BEGINNER)
-                .build();
-        Course course2 = CourseRequest.toEntity(courseRequest2).toBuilder()
-                .creationDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
-                .build();
-        courseRepository.save(course2);
+        assertNotNull(savedCourse);
+        assertNotNull(savedCourse.getCourseId());
 
-        List<CourseDTO> courseDTOS = courseService.findAll();
+        long count = courseRepository.count();
+        assertEquals(1, count);
+
+        Page<CourseDTO> courseDTOS = courseService.findAll(spec, pageable);
 
         assertNotNull(courseDTOS);
-        assertEquals(2, courseDTOS.size());
+        assertEquals(1, courseDTOS.getTotalElements(), "Expected two courses to be returned from the service");
     }
-
 
     @Test
     @DisplayName("Given Valid CourseId When Calling FindById Then It Should Return Course Successfully")
@@ -210,6 +221,20 @@ class CourseServiceImplIT {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    private Specification<Course> createCourseSpecification() {
+        return new SpecificationTemplate.CourseSpec() {
+            @Override
+            public Predicate toPredicate(Root<Course> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(criteriaBuilder.equal(root.get("courseLevel"), CourseLevel.BEGINNER));
+                predicates.add(criteriaBuilder.equal(root.get("courseStatus"), CourseStatus.INPROGRESS));
+                predicates.add(criteriaBuilder.like(root.get("name"), "%SomeName%"));
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            }
+        };
     }
 
 }

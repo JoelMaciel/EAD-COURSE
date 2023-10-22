@@ -2,6 +2,7 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
@@ -14,12 +15,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -37,6 +41,7 @@ class CourseServiceImplTest {
     private Course courseOne;
     private Course courseTwo;
     private CourseRequest courseRequestOne;
+    private Specification<Course> spec;
 
     @BeforeEach
     void setUp() {
@@ -49,26 +54,33 @@ class CourseServiceImplTest {
 
         courseOne = initCourseDates(CourseRequest.toEntity(courseRequestOne), 5, 1);
         courseTwo = initCourseDates(CourseRequest.toEntity(courseRequestTwo), 4, 2);
+
+        spec = createCourseSpecification();
     }
 
-    @DisplayName("Given a List of Courses When Calling FindAll Then It Should List Courses Successfully")
+    @DisplayName("Given a List of Courses When Calling FindAll Then It Should Page Courses Successfully")
     @Test
-    void givenListOfCourse_WhenCallingFindAll_ThenShouldReturnListCoursesSuccessfully() {
-        when(courseRepository.findAll()).thenReturn(Arrays.asList(courseOne, courseTwo));
-        List<CourseDTO> courseDTOS = courseService.findAll();
+    void givenListOfCourse_WhenCallingFindAll_ThenShouldReturnPageCoursesSuccessfully() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "courseId"));
+
+        Page<Course> coursePage = new PageImpl<>(Arrays.asList(courseOne, courseTwo));
+        when(courseRepository.findAll(spec, pageable)).thenReturn(coursePage);
+
+        Page<CourseDTO> courseDTOS = courseService.findAll(spec, pageable);
 
         assertNotNull(courseDTOS);
-        assertEquals(2, courseDTOS.size());
-        assertEquals(courseOne.getName(), courseDTOS.get(0).getName());
-        assertEquals(courseOne.getDescription(), courseDTOS.get(0).getDescription());
-        assertEquals(courseOne.getCreationDate(), courseDTOS.get(0).getCreationDate());
-        assertEquals(courseOne.getUpdateDate(), courseDTOS.get(0).getUpdateDate());
+        assertEquals(2, courseDTOS.getTotalElements());
+        assertEquals(courseOne.getName(), courseDTOS.getContent().get(0).getName());
+        assertEquals(courseOne.getDescription(), courseDTOS.getContent().get(0).getDescription());
+        assertEquals(courseOne.getCreationDate(), courseDTOS.getContent().get(0).getCreationDate());
+        assertEquals(courseOne.getUpdateDate(), courseDTOS.getContent().get(0).getUpdateDate());
 
-        assertEquals(courseTwo.getName(), courseDTOS.get(1).getName());
-        assertEquals(courseTwo.getDescription(), courseDTOS.get(1).getDescription());
-        assertEquals(courseTwo.getCreationDate(), courseDTOS.get(1).getCreationDate());
-        assertEquals(courseTwo.getUpdateDate(), courseDTOS.get(1).getUpdateDate());
-        verify(courseRepository, times(1)).findAll();
+        assertEquals(courseTwo.getName(), courseDTOS.getContent().get(1).getName());
+        assertEquals(courseTwo.getDescription(), courseDTOS.getContent().get(1).getDescription());
+        assertEquals(courseTwo.getCreationDate(), courseDTOS.getContent().get(1).getCreationDate());
+        assertEquals(courseTwo.getUpdateDate(), courseDTOS.getContent().get(1).getUpdateDate());
+
+        verify(courseRepository, times(1)).findAll(spec, pageable);
     }
 
     @DisplayName("Given UserId Valid When Calling FindById Then Return CourseDTO Successfully")
@@ -184,4 +196,19 @@ class CourseServiceImplTest {
         course.setUpdateDate(LocalDateTime.now().minusDays(updateDaysAgo));
         return course;
     }
+
+    private Specification<Course> createCourseSpecification() {
+        return new SpecificationTemplate.CourseSpec() {
+            @Override
+            public Predicate toPredicate(Root<Course> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(criteriaBuilder.equal(root.get("courseLevel"), "SomeLevel"));
+                predicates.add(criteriaBuilder.equal(root.get("courseStatus"), "SomeStatus"));
+                predicates.add(criteriaBuilder.like(root.get("name"), "%SomeName%"));
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            }
+        };
+    }
+
 }
