@@ -22,7 +22,6 @@ public class LessonController {
 
     private final LessonService lessonService;
 
-
     @GetMapping
     public Page<LessonDTO> getAllLessons(@PathVariable UUID moduleId , SpecificationTemplate.LessonSpec spec,
                                          @PageableDefault(page = 0, size = 10, sort = "lessonId", direction = Sort.Direction.ASC) Pageable pageable) {

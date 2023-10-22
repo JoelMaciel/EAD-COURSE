@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 class LessonServiceImplTest {
 
     public static final String MSG_MODULE_IN_COURSE_NOT_FOUND =
-            "There is no module registered with UUID %s to lesson whit UUD %s";
+            "There is no module registered with UUID %s to lesson whit UUID %s";
     public static final String MSG_MODULE_NOT_FOUND = "There is no module registered with UUID %s";
     @InjectMocks
     private LessonServiceImpl lessonService;
