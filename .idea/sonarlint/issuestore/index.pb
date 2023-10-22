@@ -104,3 +104,9 @@ k
 ;src/main/java/com/ead/course/api/config/ResolverConfig.java,2/4/247a3d80e73f339e465817868dfd06bfcf96f1a7
 y
 Isrc/main/java/com/ead/course/api/specification/SpecificationTemplate.java,5/1/51de998cfbaaa64558270e279483b072be545831
+|
+Lsrc/test/java/com/ead/course/domain/services/impl/LessonServiceImplTest.java,d/6/d6f8b6e0f2c45a60af995e4efd04db2af1170292
+…
+Usrc/main/java/com/ead/course/domain/exceptions/LessonIntoModuleNotFoundException.java,0/b/0b7e70c9ce8482f3f2a215d67ca744a62320c83e
+z
+Jsrc/test/java/com/ead/course/domain/services/impl/LessonServiceImplIT.java,1/5/154996a0859981dbe8a251765de0365e70535741

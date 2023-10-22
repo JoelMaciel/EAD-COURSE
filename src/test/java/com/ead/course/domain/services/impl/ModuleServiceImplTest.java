@@ -2,6 +2,7 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.dtos.request.ModuleRequest;
 import com.ead.course.api.dtos.response.ModuleDTO;
+import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.exceptions.ModuleIntoCourseNotFoundException;
 import com.ead.course.domain.models.Course;
@@ -16,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -85,21 +88,26 @@ class ModuleServiceImplTest {
     }
 
     @Test
-    @DisplayName("Given Modules Exist When Calling FindAllByCourse Then Return List of Modules Successfully")
-    void givenModulesExist_WhenCallingFindAllByCourse_ThenReturnListOfModules() {
+    @DisplayName("Given Modules Exist When Calling FindAllByCourse Then Return Page of Modules Successfully")
+    void givenModulesExist_WhenCallingFindAllByCourse_ThenReturnPageOfModules() {
         List<Module> modules = Arrays.asList(moduleOne, moduleTwo);
-        when(moduleRepository.findByCourseCourseId(courseId)).thenReturn(modules);
+        Page<Module> modulePage = new PageImpl<>(modules);
 
-        List<ModuleDTO> result = moduleService.findAllModulesByCourse(courseId);
+        Specification<Module> spec = SpecificationTemplate.moduleCourseId(courseId);
+        Pageable pageable = PageRequest.of(0,10, Sort.by(Sort.Direction.ASC, "moduleId"));
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
+        when(moduleRepository.findAll(spec, pageable)).thenReturn(modulePage);
 
-        assertTrue(result.stream().anyMatch(mod -> mod.getModuleId().equals(moduleOne.getModuleId())));
-        assertTrue(result.stream().anyMatch(mod -> mod.getTitle().equals(moduleOne.getTitle())));
+        Page<ModuleDTO> modulesDTOPage = moduleService.findAllModules(spec, pageable);
 
-        assertTrue(result.stream().anyMatch(mod -> mod.getModuleId().equals(moduleTwo.getModuleId())));
-        assertTrue(result.stream().anyMatch(mod -> mod.getTitle().equals(moduleTwo.getTitle())));
+        assertNotNull(modulesDTOPage);
+        assertEquals(2, modulesDTOPage.getTotalElements());
+
+        assertTrue(modulesDTOPage.stream().anyMatch(mod -> mod.getModuleId().equals(moduleOne.getModuleId())));
+        assertTrue(modulesDTOPage.stream().anyMatch(mod -> mod.getTitle().equals(moduleOne.getTitle())));
+
+        assertTrue(modulesDTOPage.stream().anyMatch(mod -> mod.getModuleId().equals(moduleTwo.getModuleId())));
+        assertTrue(modulesDTOPage.stream().anyMatch(mod -> mod.getTitle().equals(moduleTwo.getTitle())));
     }
 
     @Test
