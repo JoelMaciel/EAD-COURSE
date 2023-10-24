@@ -24,7 +24,6 @@ import java.util.UUID;
 public class Course extends RepresentationModel<Course> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-
     @Type(type = "uuid-char")
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.AUTO)
