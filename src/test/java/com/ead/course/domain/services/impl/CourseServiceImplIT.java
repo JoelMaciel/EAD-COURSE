@@ -89,6 +89,7 @@ class CourseServiceImplIT {
     @Test
     @DisplayName("Given Courses Exist When Calling FindAll Then Return Page of CoursesDTOs Successfully")
     void givenCoursesExist_WhenCallingFindAll_ThenReturnPageOfCourses() {
+        UUID userId = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
         Course savedCourse = courseRepository.save(course);
 
         assertNotNull(savedCourse);
@@ -97,10 +98,10 @@ class CourseServiceImplIT {
         long count = courseRepository.count();
         assertEquals(1, count);
 
-        Page<CourseDTO> courseDTOS = courseService.findAll(spec, pageable);
+        Page<CourseDTO> courseDTOS = courseService.findAll(spec, pageable, userId);
 
         assertNotNull(courseDTOS);
-        assertEquals(1, courseDTOS.getTotalElements(), "Expected two courses to be returned from the service");
+        assertEquals(0, courseDTOS.getTotalElements(), "Expected two courses to be returned from the service");
     }
 
     @Test

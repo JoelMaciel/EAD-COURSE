@@ -110,3 +110,11 @@ Lsrc/test/java/com/ead/course/domain/services/impl/LessonServiceImplTest.java,d
 Usrc/main/java/com/ead/course/domain/exceptions/LessonIntoModuleNotFoundException.java,0/b/0b7e70c9ce8482f3f2a215d67ca744a62320c83e
 z
 Jsrc/test/java/com/ead/course/domain/services/impl/LessonServiceImplIT.java,1/5/154996a0859981dbe8a251765de0365e70535741
+j
+:src/main/java/com/ead/course/domain/models/CourseUser.java,1/4/14db01482df7b4db242535e0f8625d64033be1ea
+z
+Jsrc/main/java/com/ead/course/domain/repositories/CourseUserRepository.java,3/1/311bc31aa32e24463cbee26ee635d7b339ddd5e0
+s
+Csrc/main/java/com/ead/course/domain/services/CourseUserService.java,7/7/77b367bad6f1798145ac2d9ae5f24ec9d0b27fda
+|
+Lsrc/main/java/com/ead/course/domain/services/impl/CourseUserServiceImpl.java,a/e/aed4aa15fe61671d2db0c9cdc042afc5d3f36b5b

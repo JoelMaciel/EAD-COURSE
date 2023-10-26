@@ -25,8 +25,9 @@ public class CourseController {
 
     @GetMapping
     public Page<CourseDTO> getAllCourses(SpecificationTemplate.CourseSpec spec, @PageableDefault(page = 0,
-            size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable) {
-        return courseService.findAll(spec, pageable);
+            size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
+                                         @RequestParam(required = false) UUID userId) {
+        return courseService.findAll(spec, pageable, userId);
     }
 
     @GetMapping("/{courseId}")

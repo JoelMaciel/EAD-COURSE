@@ -58,15 +58,16 @@ class CourseServiceImplTest {
         spec = createCourseSpecification();
     }
 
-    @DisplayName("Given a List of Courses When Calling FindAll Then It Should Page Courses Successfully")
     @Test
+    @DisplayName("Given a List of Courses When Calling FindAll Then It Should Page Courses Successfully")
     void givenListOfCourse_WhenCallingFindAll_ThenShouldReturnPageCoursesSuccessfully() {
+        UUID userId = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "courseId"));
 
         Page<Course> coursePage = new PageImpl<>(Arrays.asList(courseOne, courseTwo));
-        when(courseRepository.findAll(spec, pageable)).thenReturn(coursePage);
+        when(courseRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(coursePage);
 
-        Page<CourseDTO> courseDTOS = courseService.findAll(spec, pageable);
+        Page<CourseDTO> courseDTOS = courseService.findAll(null, pageable, userId);
 
         assertNotNull(courseDTOS);
         assertEquals(2, courseDTOS.getTotalElements());
@@ -80,7 +81,7 @@ class CourseServiceImplTest {
         assertEquals(courseTwo.getCreationDate(), courseDTOS.getContent().get(1).getCreationDate());
         assertEquals(courseTwo.getUpdateDate(), courseDTOS.getContent().get(1).getUpdateDate());
 
-        verify(courseRepository, times(1)).findAll(spec, pageable);
+        verify(courseRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }
 
     @DisplayName("Given UserId Valid When Calling FindById Then Return CourseDTO Successfully")

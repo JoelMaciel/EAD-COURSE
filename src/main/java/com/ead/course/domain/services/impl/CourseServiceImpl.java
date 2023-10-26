@@ -3,6 +3,7 @@ package com.ead.course.domain.services.impl;
 import com.ead.course.api.controllers.CourseController;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.repositories.CourseRepository;
@@ -27,10 +28,21 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
 
     @Override
-    public Page<CourseDTO> findAll(Specification<Course> spec, Pageable pageable) {
-        Page<Course> courses = courseRepository.findAll(spec, pageable);
-        addHateoasLinks(courses);
-        return courses.map(CourseDTO::toDTO);
+    public Page<CourseDTO> findAll(Specification<Course> spec, Pageable pageable, UUID userId) {
+        Page<Course> coursesPage = null;
+        if (userId != null) {
+            coursesPage = courseRepository.findAll(
+                    SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+        } else {
+            coursesPage = findAll(spec, pageable);
+        }
+
+        addHateoasLinks(coursesPage);
+        return coursesPage.map(CourseDTO::toDTO);
+    }
+
+    private Page<Course> findAll(Specification<Course> spec, Pageable pageable) {
+        return courseRepository.findAll(spec, pageable);
     }
 
     @Override
