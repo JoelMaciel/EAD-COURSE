@@ -30,3 +30,4 @@ spring:
   web:
     resources:
       add-mappings: false
+

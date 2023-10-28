@@ -1,3 +1,8 @@
 spring:
   profiles:
     active: dev
+
+ead:
+  api:
+    url:
+      authuser: 'http://localhost:8087'
