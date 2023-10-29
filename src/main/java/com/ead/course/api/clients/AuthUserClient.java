@@ -21,7 +21,7 @@ import java.util.UUID;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class CourseClient {
+public class AuthUserClient {
 
     private final RestTemplate restTemplate;
     private final UtilsService utilsService;
@@ -39,7 +39,8 @@ public class CourseClient {
 
         try {
             ParameterizedTypeReference<ResponsePageDTO<UserDTO>> responseType =
-                    new ParameterizedTypeReference<ResponsePageDTO<UserDTO>>() {};
+                    new ParameterizedTypeReference<ResponsePageDTO<UserDTO>>() {
+                    };
 
             result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
 
@@ -52,5 +53,10 @@ public class CourseClient {
         log.info("Ending request /users courseId {} ", courseId);
         return result.getBody();
 
+    }
+
+    public UserDTO getOneUserById(UUID userId) {
+        String url = REQUEST_URL_AUTHUSER + "/api/users/" + userId;
+        return restTemplate.exchange(url, HttpMethod.GET, null, UserDTO.class).getBody();
     }
 }

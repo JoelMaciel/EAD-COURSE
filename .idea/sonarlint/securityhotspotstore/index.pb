@@ -122,8 +122,6 @@ o
 ?src/main/java/com/ead/course/api/config/RestTemplateConfig.java,1/7/1723e748d181ca192b825d3a5b80b3c627b7b77a
 s
 Csrc/main/java/com/ead/course/api/dtos/response/ResponsePageDTO.java,3/6/3620c600059d24c74ad10f2fcaf3429331c1004d
-j
-:src/main/java/com/ead/course/api/clients/CourseClient.java,2/9/2913c4fa96c2a4756a8a685ead64160fd46609cb
 n
 >src/main/java/com/ead/course/domain/services/UtilsService.java,4/c/4cdbbd8ced7955537ec45ee8ea3f42baf86ae5ac
 v
@@ -132,7 +130,15 @@ w
 Gsrc/main/java/com/ead/course/domain/services/impl/UtilsServiceImpl.java,3/5/354039842274bcdb6dc700d5cad3452bb588e7f7
 k
 ;src/main/java/com/ead/course/api/dtos/response/UserDTO.java,8/b/8ba69205f5a448db0bdcbad2a366a58960b47df5
-s
-Csrc/main/java/com/ead/course/api/dtos/response/SubscriptionDTO.java,d/4/d413f953e2318309aff0f488d3847245ae096306
 €
 Psrc/main/java/com/ead/course/domain/exceptions/ExistsCourseAndUserException.java,3/3/3322d66569a6d822ff565ffe1645ba139870e5ae
+i
+9src/main/java/com/ead/course/domain/enums/UserStatus.java,c/c/cc9f7c9c814fad59fc46529b4d3d2dca4f2c61f9
+g
+7src/main/java/com/ead/course/domain/enums/UserType.java,c/2/c255bd8b1e12430efa6fe79eaff5cced7f47ce11
+t
+Dsrc/main/java/com/ead/course/api/dtos/request/CourseUserRequest.java,a/b/abe67db0458cc9e00649861fa3a4214430ab7f5a
+q
+Asrc/main/java/com/ead/course/api/dtos/response/CourseUserDTO.java,8/4/849d39a45111698449f5008212094b9171637e18
+l
+<src/main/java/com/ead/course/api/clients/AuthUserClient.java,f/5/f56c0303d190ecb5fe3e33af1b499e0784b60a03

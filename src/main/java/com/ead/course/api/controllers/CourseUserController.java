@@ -1,6 +1,6 @@
 package com.ead.course.api.controllers;
 
-import com.ead.course.api.clients.CourseClient;
+import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.dtos.request.CourseUserRequest;
 import com.ead.course.api.dtos.response.CourseUserDTO;
 import com.ead.course.api.dtos.response.UserDTO;
@@ -23,19 +23,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CourseUserController {
 
-    private final CourseClient courseClient;
+    private final AuthUserClient authUserClient;
     private final CourseUserService courseUserService;
 
     @GetMapping()
     public Page<UserDTO> getAllUsersByCourse(@PageableDefault(page = 0, size = 10, sort = "userId",
             direction = Sort.Direction.ASC) Pageable pageable, @PathVariable UUID courseId) {
-        return courseClient.getAllUsersByCourse(courseId, pageable);
+        return authUserClient.getAllUsersByCourse(courseId, pageable);
     }
 
     @PostMapping("/subscription")
     @ResponseStatus(HttpStatus.CREATED)
     public CourseUserDTO saveSubscriptionUserInCourse(@PathVariable UUID courseId, @RequestBody
-    @Valid CourseUserRequest courseUserRequest) {
+                                                     @Valid CourseUserRequest courseUserRequest) {
         return courseUserService.save(courseId, courseUserRequest);
     }
 }
