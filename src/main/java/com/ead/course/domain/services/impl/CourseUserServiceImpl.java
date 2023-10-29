@@ -31,7 +31,7 @@ public class CourseUserServiceImpl implements CourseUserService {
 
     @Transactional
     @Override
-    public CourseUserDTO save(UUID courseId, CourseUserRequest courseUserRequest) {
+    public CourseUserDTO saveSubscriptionUserInCourse(UUID courseId, CourseUserRequest courseUserRequest) {
         UserDTO userDTO;
         Course course = courseService.searchById(courseId);
         if (existsByCourseAndUserId(course, courseUserRequest.getUserId())) {
@@ -51,6 +51,7 @@ public class CourseUserServiceImpl implements CourseUserService {
 
         CourseUser courseUser = courseUserRepository
                 .save(CourseUserRequest.toEntity(course, courseUserRequest.getUserId()));
+        authUserClient.postSubscriptionUserInCourse(course, courseUserRequest.getUserId());
 
         return CourseUserDTO.toDTO(courseUser);
     }
@@ -59,6 +60,4 @@ public class CourseUserServiceImpl implements CourseUserService {
     public boolean existsByCourseAndUserId(Course course, UUID userId) {
         return courseUserRepository.existsByCourseAndUserId(course, userId);
     }
-
-
 }

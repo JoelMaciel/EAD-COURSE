@@ -18,7 +18,6 @@ public class CourseUserDTO {
     private UUID userId;
     private CourseDTO course;
 
-
     public static CourseUserDTO toDTO(CourseUser courseUser) {
         return CourseUserDTO.builder()
                 .id(courseUser.getId())
@@ -26,5 +25,4 @@ public class CourseUserDTO {
                 .userId(courseUser.getUserId())
                 .build();
     }
-
 }

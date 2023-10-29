@@ -36,6 +36,6 @@ public class CourseUserController {
     @ResponseStatus(HttpStatus.CREATED)
     public CourseUserDTO saveSubscriptionUserInCourse(@PathVariable UUID courseId, @RequestBody
                                                      @Valid CourseUserRequest courseUserRequest) {
-        return courseUserService.save(courseId, courseUserRequest);
+        return courseUserService.saveSubscriptionUserInCourse(courseId, courseUserRequest);
     }
 }

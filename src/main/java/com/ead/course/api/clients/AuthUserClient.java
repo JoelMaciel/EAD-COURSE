@@ -1,7 +1,9 @@
 package com.ead.course.api.clients;
 
+import com.ead.course.api.dtos.request.CourseUserRequest;
 import com.ead.course.api.dtos.response.ResponsePageDTO;
 import com.ead.course.api.dtos.response.UserDTO;
+import com.ead.course.domain.models.Course;
 import com.ead.course.domain.services.UtilsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -58,5 +60,16 @@ public class AuthUserClient {
     public UserDTO getOneUserById(UUID userId) {
         String url = REQUEST_URL_AUTHUSER + "/api/users/" + userId;
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDTO.class).getBody();
+    }
+
+    public void postSubscriptionUserInCourse(Course course, UUID userId) {
+        String ulr = REQUEST_URL_AUTHUSER + "/api/users/" + userId + "/courses/subscription";
+        var courseUserRequest = new CourseUserRequest();
+        courseUserRequest = courseUserRequest.toBuilder()
+                .courseId(course.getCourseId())
+                .userId(userId)
+                .build();
+
+        restTemplate.postForObject(ulr, courseUserRequest, String.class);
     }
 }

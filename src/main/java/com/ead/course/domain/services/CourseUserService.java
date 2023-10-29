@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface CourseUserService {
 
 
-    CourseUserDTO save(UUID courseId, CourseUserRequest courseUserRequest);
+    CourseUserDTO saveSubscriptionUserInCourse(UUID courseId, CourseUserRequest courseUserRequest);
 
     boolean existsByCourseAndUserId(Course course, UUID userId);
 }

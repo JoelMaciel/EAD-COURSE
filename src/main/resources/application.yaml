@@ -6,3 +6,8 @@ ead:
   api:
     url:
       authuser: 'http://localhost:8087'
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
