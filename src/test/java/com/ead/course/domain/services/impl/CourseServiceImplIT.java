@@ -1,5 +1,6 @@
 package com.ead.course.domain.services.impl;
 
+import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
@@ -49,6 +50,9 @@ class CourseServiceImplIT {
     private CourseServiceImpl courseService;
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private AuthUserClient authUserClient;
     private CourseRequest courseRequest;
     private Course course;
     private Specification<Course> spec;
@@ -64,7 +68,7 @@ class CourseServiceImplIT {
         spec = createCourseSpecification();
         pageable = PageRequest.of(0, PAGE_SIZE, Sort.by(Sort.Direction.ASC, "courseId"));
 
-        courseService = new CourseServiceImpl(courseRepository);
+        courseService = new CourseServiceImpl(courseRepository, authUserClient);
 
         courseRequest = CourseRequest.builder()
                 .name(uniqueCourseName)
@@ -124,12 +128,13 @@ class CourseServiceImplIT {
     @Test
     @DisplayName("Given Valid CourseRequest When Calling Save Then It Should Save and Return CourseDTO Successfully")
     void givenValidCourseRequest_WhenCallingSave_ThenReturnSavedCourseDTO() {
+        UUID userInstructor = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
         CourseRequest request = CourseRequest.builder()
                 .name("Integration Test Course")
                 .description("Integration Test Description")
                 .imageUrl("http://integrationtestimage.com")
                 .courseStatus(CourseStatus.INPROGRESS)
-                .userInstructor(UUID.randomUUID())
+                .userInstructor(userInstructor)
                 .courseLevel(CourseLevel.BEGINNER)
                 .build();
 

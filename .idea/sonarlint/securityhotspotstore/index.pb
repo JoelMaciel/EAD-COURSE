@@ -142,3 +142,7 @@ q
 Asrc/main/java/com/ead/course/api/dtos/response/CourseUserDTO.java,8/4/849d39a45111698449f5008212094b9171637e18
 l
 <src/main/java/com/ead/course/api/clients/AuthUserClient.java,f/5/f56c0303d190ecb5fe3e33af1b499e0784b60a03
+x
+Hsrc/main/java/com/ead/course/domain/exceptions/UserBlockedException.java,9/0/90dae7477d7dc746f7088797e006590fed2a938e
+y
+Isrc/main/java/com/ead/course/domain/exceptions/UserNotFoundException.java,7/a/7af5266412c8339178847c9d118ade13ccd3516a

@@ -62,6 +62,7 @@ public class AuthUserClient {
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDTO.class).getBody();
     }
 
+
     public void postSubscriptionUserInCourse(Course course, UUID userId) {
         String ulr = REQUEST_URL_AUTHUSER + "/api/users/" + userId + "/courses/subscription";
         var courseUserRequest = new CourseUserRequest();
