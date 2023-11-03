@@ -1,3 +1,25 @@
+server:
+  port: 8082
+
 spring:
+  application:
+    name: ead-course-service
   profiles:
     active: dev
+
+ead:
+  api:
+    url:
+      authuser: 'http://ead-authuser-service'
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG

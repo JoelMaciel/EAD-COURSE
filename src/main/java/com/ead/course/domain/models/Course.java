@@ -52,4 +52,8 @@ public class Course extends RepresentationModel<Course> implements Serializable 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     private Set<Module> modules;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private Set<CourseUser> coursesUsers;
+
 }

@@ -1,1 +1,0 @@
-Boas Práticas de Datas nas APIs utilizando o Padrão ISO 8601 UTC

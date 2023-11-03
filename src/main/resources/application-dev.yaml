@@ -1,6 +1,3 @@
-server:
-  port: 8082
-
 spring:
   datasource:
     url: jdbc:mysql://localhost/ead_course?createDatabaseIfNotExist=true&serverTimezone=UTC
@@ -30,3 +27,4 @@ spring:
   web:
     resources:
       add-mappings: false
+
