@@ -3,6 +3,7 @@ package com.ead.course.domain.services.impl;
 import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.api.dtos.response.UserDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.containers.DatabaseContainerConfiguration;
 import com.ead.course.domain.enums.CourseLevel;
@@ -128,13 +129,14 @@ class CourseServiceImplIT {
     @Test
     @DisplayName("Given Valid CourseRequest When Calling Save Then It Should Save and Return CourseDTO Successfully")
     void givenValidCourseRequest_WhenCallingSave_ThenReturnSavedCourseDTO() {
-        UUID userInstructor = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
+        UUID userIdInstructor = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
+        UserDTO userInstructor = authUserClient.getOneUserById(userIdInstructor);
         CourseRequest request = CourseRequest.builder()
                 .name("Integration Test Course")
                 .description("Integration Test Description")
                 .imageUrl("http://integrationtestimage.com")
                 .courseStatus(CourseStatus.INPROGRESS)
-                .userInstructor(userInstructor)
+                .userInstructor(userIdInstructor)
                 .courseLevel(CourseLevel.BEGINNER)
                 .build();
 
