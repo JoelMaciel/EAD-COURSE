@@ -1,16 +1,18 @@
 server:
   port: 8082
+  servlet:
+    context-path: '/ead-course/'
 
 spring:
   application:
     name: ead-course-service
   profiles:
-    active: dev
+    active: test
 
 ead:
   api:
     url:
-      authuser: 'http://ead-authuser-service'
+      authuser: 'http://ead-authuser-service/ead-authuser'
 
 eureka:
   client:
