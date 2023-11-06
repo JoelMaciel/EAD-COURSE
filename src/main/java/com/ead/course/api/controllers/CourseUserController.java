@@ -29,13 +29,14 @@ public class CourseUserController {
     @GetMapping()
     public Page<UserDTO> getAllUsersByCourse(@PageableDefault(page = 0, size = 10, sort = "userId",
             direction = Sort.Direction.ASC) Pageable pageable, @PathVariable UUID courseId) {
+        courseUserService.searchByCourseId(courseId);
         return authUserClient.getAllUsersByCourse(courseId, pageable);
     }
 
     @PostMapping("/subscription")
     @ResponseStatus(HttpStatus.CREATED)
     public CourseUserDTO saveSubscriptionUserInCourse(@PathVariable UUID courseId, @RequestBody
-                                                     @Valid CourseUserRequest courseUserRequest) {
+    @Valid CourseUserRequest courseUserRequest) {
         return courseUserService.saveSubscriptionUserInCourse(courseId, courseUserRequest);
     }
 }

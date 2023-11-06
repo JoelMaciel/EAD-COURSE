@@ -146,3 +146,7 @@ x
 Hsrc/main/java/com/ead/course/domain/exceptions/UserBlockedException.java,9/0/90dae7477d7dc746f7088797e006590fed2a938e
 y
 Isrc/main/java/com/ead/course/domain/exceptions/UserNotFoundException.java,7/a/7af5266412c8339178847c9d118ade13ccd3516a
+W
+'src/main/resources/application-dev.yaml,d/d/dd7e1fa690bc3bd2f07cc47b27c89954fc0135b3
+S
+#src/main/resources/application.yaml,8/b/8bf9a0c76cee89021a19081a2d70237db7e2fd8a

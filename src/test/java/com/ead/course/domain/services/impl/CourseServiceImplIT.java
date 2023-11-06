@@ -11,6 +11,7 @@ import com.ead.course.domain.enums.CourseStatus;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.repositories.CourseRepository;
+import com.ead.course.domain.services.CourseUserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,8 @@ class CourseServiceImplIT {
     @Autowired
     private CourseServiceImpl courseService;
     @Autowired
+    private  CourseUserService courseUserService;
+    @Autowired
     private CourseRepository courseRepository;
 
     @Autowired
@@ -69,7 +72,7 @@ class CourseServiceImplIT {
         spec = createCourseSpecification();
         pageable = PageRequest.of(0, PAGE_SIZE, Sort.by(Sort.Direction.ASC, "courseId"));
 
-        courseService = new CourseServiceImpl(courseRepository, authUserClient);
+        courseService = new CourseServiceImpl(courseRepository, authUserClient, courseUserService);
 
         courseRequest = CourseRequest.builder()
                 .name(uniqueCourseName)
