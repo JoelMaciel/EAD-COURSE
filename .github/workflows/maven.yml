@@ -6,53 +6,45 @@ on:
       - 'feature/*'
       - 'develop'
       - 'main'
-      
+
 jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    
+
     - name: Start Services
       run: docker-compose -f ./src/docker/docker-compose.yml up -d
 
-    - name: Print Eureka Server logs if it fails to start
+    - name: Check Services Health
       run: |
-        echo "Waiting for Eureka Server to launch on 8761..."
-        timeout=90 # Timeout after 90 seconds
-        while ! nc -z localhost 8761; do
-          sleep 10
-          timeout=$((timeout-10))
-          if [ $timeout -le 0 ]; then
-            echo "Eureka Server failed to start, printing logs:"
-            docker-compose logs eureka-server
-            exit 1
-          fi
-        done
-        echo "Eureka Server launched"
-    
-    - name: Wait for API Gateway
-      run: |
-        echo "Waiting for API Gateway to launch on 8080..."
-        timeout=90 # Timeout after 90 seconds
-        while ! nc -z localhost 8080; do
-          sleep 10
-          timeout=$((timeout-10))
-          if [ $timeout -le 0 ]; then
-            echo "API Gateway failed to start, printing logs:"
-            docker-compose logs api-gateway
-            exit 1
-          fi
-        done
-        echo "API Gateway launched"
-    
+        check_service() {
+          service_name=$1
+          port=$2
+          echo "Waiting for $service_name to launch on $port..."
+          timeout=180 # Timeout after 3 minutes
+          while ! nc -z localhost $port; do
+            sleep 10
+            timeout=$((timeout-10))
+            if [ $timeout -le 0 ]; then
+              echo "$service_name failed to start, printing logs:"
+              docker-compose logs $service_name
+              exit 1
+            fi
+          done
+          echo "$service_name launched"
+        }
+
+        check_service eureka-server 8761
+        check_service api-gateway 8080
+
     - name: Run Unit and Integration Tests
       run: mvn test verify -DskipTests=false --file pom.xml
 
@@ -61,13 +53,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    
-    - name: Build
-      run: mvn clean install --file pom.xml
+
+    - name: Build and Check for Build Failures
+      run: |
+        mvn clean install --file pom.xml || (echo "Build failed, printing logs for services:" && docker-compose logs && exit 1)
