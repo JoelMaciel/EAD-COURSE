@@ -6,21 +6,37 @@ on:
       - 'feature/*'
       - 'develop'
       - 'main'
-
+      
 jobs:
   tests:
     runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ead_course
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
     - uses: actions/checkout@v3
-
+    
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-
+    
     - name: Start Services
       run: docker-compose -f ./src/docker/docker-compose.yml up -d
 
@@ -31,7 +47,7 @@ jobs:
           sleep 10
         done
         echo "Eureka Server launched"
-
+    
     - name: Wait for API Gateway
       run: |
         echo "Waiting for API Gateway to launch on 8080..."
@@ -39,6 +55,8 @@ jobs:
           sleep 10
         done
         echo "API Gateway launched"
-
+    
     - name: Run Unit and Integration Tests
       run: mvn test verify -DskipTests=false --file pom.xml
+
+ 
