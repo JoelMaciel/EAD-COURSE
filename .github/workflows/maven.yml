@@ -10,6 +10,22 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ead_course
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - uses: actions/checkout@v3
 
@@ -20,30 +36,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Start Services
-        run: docker-compose -f ./src/docker/docker-compose.yml up -d
-
-      - name: Check Services Health
+      - name: Wait for MySQL
         run: |
-          check_service() {
-            service_name=$1
-            port=$2
-            echo "Waiting for $service_name to launch on $port..."
-            timeout=180 # Timeout after 3 minutes
-            while ! nc -z localhost $port; do
-              sleep 10
-              timeout=$((timeout-10))
-              if [ $timeout -le 0 ]; then
-                echo "$service_name failed to start, printing logs:"
-                docker-compose logs $service_name
-                exit 1
-              fi
-            done
-            echo "$service_name launched"
-          }
-
-          check_service eureka-server 8761
-          check_service api-gateway 8080
+          until mysqladmin ping -h"127.0.0.1" -P"3306" --silent; do
+            echo "Waiting for MySQL to be up..."
+            sleep 10
+          done
 
       - name: Run Unit and Integration Tests
         run: mvn test verify -DskipTests=false --file pom.xml
@@ -61,22 +59,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Check for Build Failures
+      - name: Build with Maven
         run: mvn clean install --file pom.xml
-
-      - name: Upload Service Logs on Failure
-        if: failure()
-        run: |
-          docker-compose logs eureka-server > eureka-server_logs.txt
-          docker-compose logs api-gateway > api-gateway_logs.txt
-          echo "Logs captured for services."
-        uses: actions/upload-artifact@v3
-        with:
-          name: service-logs
-          path: |
-            eureka-server_logs.txt
-            api-gateway_logs.txt
-
-      - name: Clean up
-        if: always()
-        run: docker-compose -f ./src/docker/docker-compose.yml down
