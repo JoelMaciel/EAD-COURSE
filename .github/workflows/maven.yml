@@ -23,19 +23,33 @@ jobs:
     - name: Start Services
       run: docker-compose -f ./src/docker/docker-compose.yml up -d
 
-    - name: Wait for Eureka Server
+    - name: Print Eureka Server logs if it fails to start
       run: |
         echo "Waiting for Eureka Server to launch on 8761..."
+        timeout=90 # Timeout after 90 seconds
         while ! nc -z localhost 8761; do
           sleep 10
+          timeout=$((timeout-10))
+          if [ $timeout -le 0 ]; then
+            echo "Eureka Server failed to start, printing logs:"
+            docker-compose logs eureka-server
+            exit 1
+          fi
         done
         echo "Eureka Server launched"
     
     - name: Wait for API Gateway
       run: |
         echo "Waiting for API Gateway to launch on 8080..."
+        timeout=90 # Timeout after 90 seconds
         while ! nc -z localhost 8080; do
           sleep 10
+          timeout=$((timeout-10))
+          if [ $timeout -le 0 ]; then
+            echo "API Gateway failed to start, printing logs:"
+            docker-compose logs api-gateway
+            exit 1
+          fi
         done
         echo "API Gateway launched"
     
