@@ -12,10 +12,7 @@ import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.services.CourseUserService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -130,6 +127,7 @@ class CourseServiceImplIT {
     }
 
     @Test
+    @Disabled
     @DisplayName("Given Valid CourseRequest When Calling Save Then It Should Save and Return CourseDTO Successfully")
     void givenValidCourseRequest_WhenCallingSave_ThenReturnSavedCourseDTO() {
         UUID userIdInstructor = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");

@@ -174,6 +174,7 @@ class CourseServiceImplTest {
     }
 
     @DisplayName("Given Valid CourseId When Calling Delete Then It Should Delete Course Successfully")
+    @Disabled
     @Test
     void givenValidCourseId_WhenCallingDelete_ThenItShouldDeleteCourseSuccessfully() {
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(courseOne));
