@@ -10,6 +10,21 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ead_authuser
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 11
@@ -18,12 +33,22 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: List directory files
+    - name: Start Services
+      run: docker-compose -f ./src/docker/docker-compose.yml up -d
+    - name: Wait for Eureka Server
       run: |
-        ls -la
-        ls -la ./src/docker
-    - name: Start MySQL
-      run: docker-compose -f ./src/docker/docker-compose.yml up -d  
+        echo "Waiting for Eureka Server to launch on 8761..."
+        while ! nc -z localhost 8761; do
+          sleep 10
+        done
+        echo "Eureka Server launched"
+    - name: Wait for API Gateway
+      run: |
+        echo "Waiting for API Gateway to launch on 8080..."
+        while ! nc -z localhost 8080; do
+          sleep 10
+        done
+        echo "API Gateway launched"
     - name: Run Unit and Integration Tests
       run: mvn test verify -DskipTests=false --file pom.xml
 
@@ -40,3 +65,16 @@ jobs:
         cache: maven
     - name: Build without tests
       run: mvn package -DskipTests --file pom.xml
+    - name: Build Docker Image for Eureka Server
+      run: docker build -t seu_usuario_dockerhub/eureka-server:$GITHUB_SHA ./caminho_para_eureka_server
+    - name: Build Docker Image for API Gateway
+      run: docker build -t seu_usuario_dockerhub/api-gateway:$GITHUB_SHA ./caminho_para_api_gateway
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Push Eureka Server Image to Docker Hub
+      run: docker push seu_usuario_dockerhub/eureka-server:$GITHUB_SHA
+    - name: Push API Gateway Image to Docker Hub
+      run: docker push seu_usuario_dockerhub/api-gateway:$GITHUB_SHA
