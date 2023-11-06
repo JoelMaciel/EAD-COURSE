@@ -60,4 +60,14 @@ public class CourseUserServiceImpl implements CourseUserService {
     public boolean existsByCourseAndUserId(Course course, UUID userId) {
         return courseUserRepository.existsByCourseAndUserId(course, userId);
     }
+
+    @Override
+    public boolean existsByCourseId(UUID courseId) {
+        return courseUserRepository.existsByCourse_CourseId(courseId);
+    }
+
+    @Override
+    public void searchByCourseId(UUID courseId) {
+        courseService.searchById(courseId);
+    }
 }

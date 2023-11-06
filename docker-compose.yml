@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    image: joel37/eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
+  api-gateway:
+    image: joel37/api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-network
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: 'ead_course'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  db-data:

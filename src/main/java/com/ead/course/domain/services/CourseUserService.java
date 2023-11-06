@@ -8,8 +8,10 @@ import java.util.UUID;
 
 public interface CourseUserService {
 
-
     CourseUserDTO saveSubscriptionUserInCourse(UUID courseId, CourseUserRequest courseUserRequest);
 
     boolean existsByCourseAndUserId(Course course, UUID userId);
+
+    boolean existsByCourseId(UUID courseId);
+    void searchByCourseId(UUID courseId);
 }

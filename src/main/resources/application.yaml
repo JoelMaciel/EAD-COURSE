@@ -7,7 +7,7 @@ spring:
   application:
     name: ead-course-service
   profiles:
-    active: test
+    active: dev
 
 ead:
   api:

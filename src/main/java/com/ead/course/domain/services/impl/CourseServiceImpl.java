@@ -13,7 +13,8 @@ import com.ead.course.domain.exceptions.UserNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.services.CourseService;
-import lombok.RequiredArgsConstructor;
+import com.ead.course.domain.services.CourseUserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,11 +30,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
-@RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final AuthUserClient authUserClient;
+    private final CourseUserService courseUserService;
+
+    public CourseServiceImpl(CourseRepository courseRepository,
+                             AuthUserClient authUserClient,
+                             @Lazy CourseUserService courseUserService) {
+        this.courseRepository = courseRepository;
+        this.authUserClient = authUserClient;
+        this.courseUserService = courseUserService;
+    }
 
     @Override
     public Page<CourseDTO> findAll(Specification<Course> spec, Pageable pageable, UUID userId) {
@@ -86,7 +95,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void delete(UUID courseId) {
         Course course = searchById(courseId);
+        if (courseUserService.existsByCourseId(courseId)) {
+            authUserClient.deleteCourseInAuthUser(course.getCourseId());
+        }
         courseRepository.delete(course);
+
     }
 
     @Override
