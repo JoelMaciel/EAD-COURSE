@@ -35,7 +35,10 @@ jobs:
             timeout=$((timeout-10))
             if [ $timeout -le 0 ]; then
               echo "$service_name failed to start, printing logs:"
-              docker-compose logs $service_name
+              docker-compose logs $service_name > "${service_name}_logs.txt"
+              echo "Attempting to restart $service_name..."
+              docker-compose restart $service_name
+              echo "Check ${service_name}_logs.txt for more details."
               exit 1
             fi
           done
@@ -64,3 +67,12 @@ jobs:
     - name: Build and Check for Build Failures
       run: |
         mvn clean install --file pom.xml || (echo "Build failed, printing logs for services:" && docker-compose logs && exit 1)
+
+    - name: Upload Service Logs on Failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: service-logs
+        path: |
+          eureka-server_logs.txt
+          api-gateway_logs.txt
