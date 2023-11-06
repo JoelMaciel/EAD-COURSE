@@ -38,7 +38,7 @@ jobs:
 
       - name: Wait for MySQL
         run: |
-          until mysqladmin ping -h"127.0.0.1" -P"3306" --silent; do
+          until mysqladmin ping -h"127.0.0.1" -P"3307" --silent; do
             echo "Waiting for MySQL to be up..."
             sleep 10
           done
