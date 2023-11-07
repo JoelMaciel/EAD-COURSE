@@ -19,24 +19,29 @@ import java.util.UUID;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/courses/{courseId}/users")
 @RequiredArgsConstructor
 public class CourseUserController {
 
     private final AuthUserClient authUserClient;
     private final CourseUserService courseUserService;
 
-    @GetMapping()
+    @GetMapping("/api/courses/{courseId}/users")
     public Page<UserDTO> getAllUsersByCourse(@PageableDefault(page = 0, size = 10, sort = "userId",
             direction = Sort.Direction.ASC) Pageable pageable, @PathVariable UUID courseId) {
         courseUserService.searchByCourseId(courseId);
         return authUserClient.getAllUsersByCourse(courseId, pageable);
     }
 
-    @PostMapping("/subscription")
+    @PostMapping("/api/courses/{courseId}/users/subscription")
     @ResponseStatus(HttpStatus.CREATED)
     public CourseUserDTO saveSubscriptionUserInCourse(@PathVariable UUID courseId, @RequestBody
     @Valid CourseUserRequest courseUserRequest) {
         return courseUserService.saveSubscriptionUserInCourse(courseId, courseUserRequest);
+    }
+
+    @DeleteMapping("/api/courses/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCourseUserByUser(@PathVariable UUID userId) {
+        courseUserService.deleteCourseUserByUser(userId);
     }
 }
