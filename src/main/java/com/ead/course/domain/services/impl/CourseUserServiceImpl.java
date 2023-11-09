@@ -70,4 +70,12 @@ public class CourseUserServiceImpl implements CourseUserService {
     public void searchByCourseId(UUID courseId) {
         courseService.searchById(courseId);
     }
+
+    @Override
+    @Transactional
+    public void deleteCourseUserByUser(UUID userId) {
+        if (courseUserRepository.existsByUserId(userId)) {
+            courseUserRepository.deleteAllByUserId(userId);
+        }
+    }
 }
