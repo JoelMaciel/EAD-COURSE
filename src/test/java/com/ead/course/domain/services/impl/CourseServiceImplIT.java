@@ -1,9 +1,7 @@
 package com.ead.course.domain.services.impl;
 
-import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
-import com.ead.course.api.dtos.response.UserDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.containers.DatabaseContainerConfiguration;
 import com.ead.course.domain.enums.CourseLevel;
@@ -11,7 +9,7 @@ import com.ead.course.domain.enums.CourseStatus;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.models.Course;
 import com.ead.course.domain.repositories.CourseRepository;
-import com.ead.course.domain.services.CourseUserService;
+import com.ead.course.domain.services.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,12 +46,10 @@ class CourseServiceImplIT {
     @Autowired
     private CourseServiceImpl courseService;
     @Autowired
-    private  CourseUserService courseUserService;
+    private UserService userService;
     @Autowired
     private CourseRepository courseRepository;
 
-    @Autowired
-    private AuthUserClient authUserClient;
     private CourseRequest courseRequest;
     private Course course;
     private Specification<Course> spec;
@@ -69,7 +65,7 @@ class CourseServiceImplIT {
         spec = createCourseSpecification();
         pageable = PageRequest.of(0, PAGE_SIZE, Sort.by(Sort.Direction.ASC, "courseId"));
 
-        courseService = new CourseServiceImpl(courseRepository, authUserClient, courseUserService);
+        courseService = new CourseServiceImpl(courseRepository, userService);
 
         courseRequest = CourseRequest.builder()
                 .name(uniqueCourseName)
@@ -131,7 +127,6 @@ class CourseServiceImplIT {
     @DisplayName("Given Valid CourseRequest When Calling Save Then It Should Save and Return CourseDTO Successfully")
     void givenValidCourseRequest_WhenCallingSave_ThenReturnSavedCourseDTO() {
         UUID userIdInstructor = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
-        UserDTO userInstructor = authUserClient.getOneUserById(userIdInstructor);
         CourseRequest request = CourseRequest.builder()
                 .name("Integration Test Course")
                 .description("Integration Test Description")

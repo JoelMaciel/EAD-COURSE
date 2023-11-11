@@ -1,20 +1,18 @@
 package com.ead.course.domain.services.impl;
 
-import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.controllers.CourseController;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
-import com.ead.course.api.dtos.response.UserDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.domain.enums.UserType;
 import com.ead.course.domain.exceptions.BusinessException;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.exceptions.UserNotFoundException;
 import com.ead.course.domain.models.Course;
+import com.ead.course.domain.models.User;
 import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.services.CourseService;
-import com.ead.course.domain.services.CourseUserService;
-import org.springframework.context.annotation.Lazy;
+import com.ead.course.domain.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,33 +31,21 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
-    private final AuthUserClient authUserClient;
-    private final CourseUserService courseUserService;
+    private final UserService userService;
 
-    public CourseServiceImpl(CourseRepository courseRepository,
-                             AuthUserClient authUserClient,
-                             @Lazy CourseUserService courseUserService) {
+    public CourseServiceImpl(CourseRepository courseRepository, UserService userService) {
         this.courseRepository = courseRepository;
-        this.authUserClient = authUserClient;
-        this.courseUserService = courseUserService;
+        this.userService = userService;
     }
 
     @Override
     public Page<CourseDTO> findAll(Specification<Course> spec, Pageable pageable, UUID userId) {
-        Page<Course> coursesPage = null;
-        if (userId != null) {
-            coursesPage = courseRepository.findAll(
-                    SpecificationTemplate.courseUserId(userId).and(spec), pageable);
-        } else {
-            coursesPage = findAll(spec, pageable);
-        }
+        Specification<Course> effectiveSpec = (userId != null) ?
+                SpecificationTemplate.courseUserId(userId).and(spec) : spec;
+        Page<Course> coursesPage = courseRepository.findAll(effectiveSpec, pageable);
 
         addHateoasLinks(coursesPage);
         return coursesPage.map(CourseDTO::toDTO);
-    }
-
-    private Page<Course> findAll(Specification<Course> spec, Pageable pageable) {
-        return courseRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -95,9 +81,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void delete(UUID courseId) {
         Course course = searchById(courseId);
-        if (courseUserService.existsByCourseId(courseId)) {
-            authUserClient.deleteCourseInAuthUser(course.getCourseId());
-        }
         courseRepository.delete(course);
 
     }
@@ -110,7 +93,7 @@ public class CourseServiceImpl implements CourseService {
 
     private void validateInstructorOrAdmin(UUID userInstructor) {
         try {
-            UserDTO user = authUserClient.getOneUserById(userInstructor);
+            var user = new User(); //UserDTO user = authUserClient.getOneUserById(userInstructor);
             if (user.getUserType().equals(UserType.STUDENT)) {
                 throw new BusinessException("User must be INSTRUCTOR or ADMIN");
             }

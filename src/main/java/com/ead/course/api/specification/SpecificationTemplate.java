@@ -1,9 +1,9 @@
 package com.ead.course.api.specification;
 
 import com.ead.course.domain.models.Course;
-import com.ead.course.domain.models.CourseUser;
 import com.ead.course.domain.models.Lesson;
 import com.ead.course.domain.models.Module;
+import com.ead.course.domain.models.User;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
@@ -11,7 +11,6 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.UUID;
@@ -23,6 +22,15 @@ public class SpecificationTemplate {
             @Spec(path = "name", spec = Like.class)
     })
     public interface CourseSpec extends Specification<Course> {
+    }
+
+    @And({
+            @Spec(path = "userType", spec = Equal.class),
+            @Spec(path = "userStatus", spec = Equal.class),
+            @Spec(path = "email", spec = Like.class),
+            @Spec(path = "fullName", spec = Like.class)
+    })
+    public interface UserSpec extends Specification<User> {
     }
 
     @Spec(path = "title", spec = Like.class)
@@ -53,11 +61,23 @@ public class SpecificationTemplate {
         };
     }
 
+    public static Specification<User> userCourseId(final UUID courseId) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+            Root<User> user = root;
+            Root<Course> course = query.from(Course.class);
+            Expression<Collection<User>> coursesUsers = course.get("users");
+            return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(user, coursesUsers));
+        };
+    }
+
     public static Specification<Course> courseUserId(final UUID userId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            Join<Course, CourseUser> courseProd = root.join("coursesUsers");
-            return cb.equal(courseProd.get("userId"), userId);
+            Root<Course> course = root;
+            Root<User> user = query.from(User.class);
+            Expression<Collection<Course>> usersCourses = user.get("courses");
+            return cb.and(cb.equal(user.get("userId"), userId), cb.isMember(course, usersCourses));
         };
     }
 }

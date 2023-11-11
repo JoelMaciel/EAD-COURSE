@@ -1,10 +1,10 @@
 package com.ead.course.api.controllers;
 
-import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.dtos.request.CourseUserRequest;
 import com.ead.course.api.dtos.response.CourseUserDTO;
-import com.ead.course.api.dtos.response.UserDTO;
-import com.ead.course.domain.services.CourseUserService;
+import com.ead.course.api.specification.SpecificationTemplate;
+import com.ead.course.domain.models.User;
+import com.ead.course.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -22,26 +22,20 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CourseUserController {
 
-    private final AuthUserClient authUserClient;
-    private final CourseUserService courseUserService;
+    private final UserService userService;
 
     @GetMapping("/api/courses/{courseId}/users")
-    public Page<UserDTO> getAllUsersByCourse(@PageableDefault(page = 0, size = 10, sort = "userId",
-            direction = Sort.Direction.ASC) Pageable pageable, @PathVariable UUID courseId) {
-        courseUserService.searchByCourseId(courseId);
-        return authUserClient.getAllUsersByCourse(courseId, pageable);
+    public Page<User> getAllUsersByCourse(SpecificationTemplate.UserSpec spec, @PageableDefault(page = 0,
+        size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable UUID courseId) {
+        return userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
     }
 
     @PostMapping("/api/courses/{courseId}/users/subscription")
     @ResponseStatus(HttpStatus.CREATED)
     public CourseUserDTO saveSubscriptionUserInCourse(@PathVariable UUID courseId, @RequestBody
     @Valid CourseUserRequest courseUserRequest) {
-        return courseUserService.saveSubscriptionUserInCourse(courseId, courseUserRequest);
+        //return userService.saveSubscriptionUserInCourse(courseId, courseUserRequest);
+        return null;
     }
 
-    @DeleteMapping("/api/courses/users/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCourseUserByUser(@PathVariable UUID userId) {
-        courseUserService.deleteCourseUserByUser(userId);
-    }
 }

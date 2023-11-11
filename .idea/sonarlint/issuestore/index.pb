@@ -110,14 +110,6 @@ Lsrc/test/java/com/ead/course/domain/services/impl/LessonServiceImplTest.java,d
 Usrc/main/java/com/ead/course/domain/exceptions/LessonIntoModuleNotFoundException.java,0/b/0b7e70c9ce8482f3f2a215d67ca744a62320c83e
 z
 Jsrc/test/java/com/ead/course/domain/services/impl/LessonServiceImplIT.java,1/5/154996a0859981dbe8a251765de0365e70535741
-j
-:src/main/java/com/ead/course/domain/models/CourseUser.java,1/4/14db01482df7b4db242535e0f8625d64033be1ea
-z
-Jsrc/main/java/com/ead/course/domain/repositories/CourseUserRepository.java,3/1/311bc31aa32e24463cbee26ee635d7b339ddd5e0
-s
-Csrc/main/java/com/ead/course/domain/services/CourseUserService.java,7/7/77b367bad6f1798145ac2d9ae5f24ec9d0b27fda
-|
-Lsrc/main/java/com/ead/course/domain/services/impl/CourseUserServiceImpl.java,a/e/aed4aa15fe61671d2db0c9cdc042afc5d3f36b5b
 s
 Csrc/main/java/com/ead/course/api/dtos/response/ResponsePageDTO.java,3/6/3620c600059d24c74ad10f2fcaf3429331c1004d
 o
@@ -126,8 +118,6 @@ n
 >src/main/java/com/ead/course/domain/services/UtilsService.java,4/c/4cdbbd8ced7955537ec45ee8ea3f42baf86ae5ac
 v
 Fsrc/main/java/com/ead/course/api/controllers/CourseUserController.java,d/b/db507fe41a18abea72edca147c1faf21dee32315
-k
-;src/main/java/com/ead/course/api/dtos/response/UserDTO.java,8/b/8ba69205f5a448db0bdcbad2a366a58960b47df5
 w
 Gsrc/main/java/com/ead/course/domain/services/impl/UtilsServiceImpl.java,3/5/354039842274bcdb6dc700d5cad3452bb588e7f7
 €
@@ -140,8 +130,6 @@ g
 7src/main/java/com/ead/course/domain/enums/UserType.java,c/2/c255bd8b1e12430efa6fe79eaff5cced7f47ce11
 t
 Dsrc/main/java/com/ead/course/api/dtos/request/CourseUserRequest.java,a/b/abe67db0458cc9e00649861fa3a4214430ab7f5a
-l
-<src/main/java/com/ead/course/api/clients/AuthUserClient.java,f/5/f56c0303d190ecb5fe3e33af1b499e0784b60a03
 x
 Hsrc/main/java/com/ead/course/domain/exceptions/UserBlockedException.java,9/0/90dae7477d7dc746f7088797e006590fed2a938e
 y
@@ -150,3 +138,13 @@ W
 'src/main/resources/application-dev.yaml,d/d/dd7e1fa690bc3bd2f07cc47b27c89954fc0135b3
 S
 #src/main/resources/application.yaml,8/b/8bf9a0c76cee89021a19081a2d70237db7e2fd8a
+B
+docker-compose.yml,3/5/35b8c13cf2eb2a194eada000eb310d65aed53b2a
+m
+=src/main/java/com/ead/course/domain/services/UserService.java,c/a/ca24234312b43cd29b07c8b701aa77ef4087d82d
+v
+Fsrc/main/java/com/ead/course/domain/services/impl/UserServiceImpl.java,0/3/0323e52dde963e309e44efbb6261f0d55d3fb68f
+t
+Dsrc/main/java/com/ead/course/domain/repositories/UserRepository.java,e/3/e3d0d4680d228cd071210a9a51e715db043120e6
+d
+4src/main/java/com/ead/course/domain/models/User.java,e/5/e50fcdce0a0cde7187b04e9c5db32f15773e9962
