@@ -29,11 +29,13 @@ public class User implements Serializable {
     @Id
     @Type(type = "uuid-char")
     private UUID userId;
-    private UserType userType;
+    private String username;
+    private String userType;
     private String email;
     private String fullName;
     private String userStatus;
     private String cpf;
+    private String phoneNumber;
     private String imageUrl;
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)

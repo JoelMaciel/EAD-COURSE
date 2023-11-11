@@ -148,3 +148,11 @@ v
 Fsrc/main/java/com/ead/course/domain/services/impl/UserServiceImpl.java,0/3/0323e52dde963e309e44efbb6261f0d55d3fb68f
 d
 4src/main/java/com/ead/course/domain/models/User.java,e/5/e50fcdce0a0cde7187b04e9c5db32f15773e9962
+k
+;src/main/java/com/ead/course/api/config/RabbitmqConfig.java,c/7/c70df4941285cae9f75f21dc632fb2c14b1c3983
+i
+9src/main/java/com/ead/course/domain/enums/ActionType.java,8/d/8dfa9f45238086061823c6399784d9d5bd4f2271
+l
+<src/main/java/com/ead/course/api/consumers/UserConsumer.java,7/3/73364869b919976c6bcf8c223b1318f9bfca6104
+m
+=src/main/java/com/ead/course/api/dtos/event/UserEventDTO.java,7/a/7a32b0fc51c1a3349f0d14d33cc4a75331b6a38a
