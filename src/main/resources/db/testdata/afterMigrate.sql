@@ -16,21 +16,21 @@ VALUES
 
 -- Inserting Users
 INSERT INTO `user` (
-  `user_id`, `username`, `email`, `full_name`, `cpf`,
+  `user_id`, `username`, `email`, `full_name`, `cpf`, `phone_number`,
   `user_status`, `user_type`, `image_url`
 ) VALUES
   (
     '3106c73c-5142-480b-8344-388610678971', 'johnDoe', 'john.doe@example.com', 'John Doe',
-    '123456', 'ACTIVE', 'STUDENT', 'http://example.com/image1.jpg'
+    '123456', '(555) 123-4567', 'ACTIVE', 'STUDENT', 'http://example.com/image1.jpg'
   ),
   (
     '99735306-994d-46f9-82a7-4116145a5678', 'aliceSmith', 'alice.smith@example.com', 'Alice Smith',
-    '38580865093', 'BLOCKED', 'INSTRUCTOR', 'http://example.com/image2.jpg'
+    '38580865093', '(11) 98765-4321', 'BLOCKED', 'INSTRUCTOR', 'http://example.com/image2.jpg'
   ),
   (
     'c85685f2-4135-492d-873c-936471e60792', 'bobJones', 'bob.jones@example.com', 'Bob Jones',
-    '59311079081', 'ACTIVE', 'ADMIN', 'http://example.com/image3.jpg'
-  );
+    '59311079081', '020 7946 0852', 'ACTIVE', 'ADMIN', 'http://example.com/image3.jpg'
+  );;
 
 
 -- Inserting Modules
