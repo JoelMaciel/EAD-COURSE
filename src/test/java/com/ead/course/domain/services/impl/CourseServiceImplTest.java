@@ -1,9 +1,7 @@
 package com.ead.course.domain.services.impl;
 
-import com.ead.course.api.clients.AuthUserClient;
 import com.ead.course.api.dtos.request.CourseRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
-import com.ead.course.api.dtos.response.UserDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
@@ -38,8 +36,7 @@ class CourseServiceImplTest {
     @Mock
     private CourseRepository courseRepository;
 
-    @Mock
-    private AuthUserClient authUserClient;
+
 
     @InjectMocks
     private CourseServiceImpl courseService;
@@ -120,9 +117,9 @@ class CourseServiceImplTest {
     @Test
     void givenCourseRequest_WhenCallingSave_ThenReturnCourseDTOSuccessfully() {
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserType(UserType.INSTRUCTOR);
-        when(authUserClient.getOneUserById(any(UUID.class))).thenReturn(userDTO);
+//        UserDTO userDTO = new UserDTO();
+//        userDTO.setUserType(UserType.INSTRUCTOR);
+//        when(authUserClient.getOneUserById(any(UUID.class))).thenReturn(userDTO);
 
         when(courseRepository.save(any(Course.class))).thenReturn(courseOne);
 

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost/ead_course?createDatabaseIfNotExist=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost/ead_course_two?createDatabaseIfNotExist=true&serverTimezone=UTC
     username: root
     password: root
 
