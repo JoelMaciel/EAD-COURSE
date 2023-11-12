@@ -2,23 +2,27 @@ package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.controllers.CourseController;
 import com.ead.course.api.dtos.request.CourseRequest;
+import com.ead.course.api.dtos.request.CourseUserRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.api.dtos.response.CourseUserDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
+import com.ead.course.domain.enums.UserStatus;
 import com.ead.course.domain.enums.UserType;
 import com.ead.course.domain.exceptions.BusinessException;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
-import com.ead.course.domain.exceptions.UserNotFoundException;
+import com.ead.course.domain.exceptions.ExistsCourseAndUserException;
+import com.ead.course.domain.exceptions.UserBlockedException;
 import com.ead.course.domain.models.Course;
+import com.ead.course.domain.models.CourseUser;
 import com.ead.course.domain.models.User;
 import com.ead.course.domain.repositories.CourseRepository;
+import com.ead.course.domain.repositories.CourseUserRepository;
 import com.ead.course.domain.services.CourseService;
 import com.ead.course.domain.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -30,12 +34,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Service
 public class CourseServiceImpl implements CourseService {
 
+    public static final String MSG_USER_ADMIN_OR_INSTRUCTOR = "User must be INSTRUCTOR or ADMIN";
     private final CourseRepository courseRepository;
     private final UserService userService;
+    private final CourseUserRepository courseUserRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, UserService userService) {
+    public CourseServiceImpl(CourseRepository courseRepository, UserService userService, CourseUserRepository courseUserRepository) {
         this.courseRepository = courseRepository;
         this.userService = userService;
+        this.courseUserRepository = courseUserRepository;
     }
 
     @Override
@@ -79,6 +86,24 @@ public class CourseServiceImpl implements CourseService {
 
     @Transactional
     @Override
+    public CourseUserDTO saveSubscriptionUserInCourse(UUID courseId, CourseUserRequest courseUserRequest) {
+        Course course = searchById(courseId);
+        validateCourseAndUser(courseId, courseUserRequest.getUserId());
+
+        User user = userService.searchById(courseUserRequest.getUserId());
+        validateUserStatus(user);
+
+        CourseUser courseUser = CourseUserRequest.toEntity(course, user);
+        return CourseUserDTO.toDTO(courseUserRepository.save(courseUser));
+    }
+
+    @Override
+    public boolean existsByCourseAndUser(UUID courseId, UUID userId) {
+        return courseRepository.existsByCourseAndUser(courseId, userId).intValue() > 0;
+    }
+
+    @Transactional
+    @Override
     public void delete(UUID courseId) {
         Course course = searchById(courseId);
         courseRepository.delete(course);
@@ -92,15 +117,10 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private void validateInstructorOrAdmin(UUID userInstructor) {
-        try {
-            var user = new User(); //UserDTO user = authUserClient.getOneUserById(userInstructor);
-            if (user.getUserType().equals(UserType.STUDENT)) {
-                throw new BusinessException("User must be INSTRUCTOR or ADMIN");
-            }
-        } catch (HttpStatusCodeException e) {
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                throw new UserNotFoundException(userInstructor);
-            }
+        User user = userService.searchById(userInstructor);
+
+        if (user.getUserType().equals(UserType.STUDENT.toString())) {
+            throw new BusinessException(MSG_USER_ADMIN_OR_INSTRUCTOR);
         }
     }
 
@@ -109,6 +129,18 @@ public class CourseServiceImpl implements CourseService {
                 .creationDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .build();
+    }
+
+    private void validateCourseAndUser(UUID courseId, UUID userId) {
+        if (existsByCourseAndUser(courseId, userId)) {
+            throw new ExistsCourseAndUserException(courseId);
+        }
+    }
+
+    private void validateUserStatus(User user) {
+        if (user.getUserStatus().equals(UserStatus.BLOCKED.toString())) {
+            throw new UserBlockedException();
+        }
     }
 
     private void addHateoasLinks(Page<Course> courses) {
