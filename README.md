@@ -39,6 +39,13 @@ cd EAD-COURSE
 
 ## Request Images
 
+#### Microservice Course registered in Service Discovery Eureka and queued in RabbitMQ
+
+![Captura de tela de 2023-11-12 20-41-16](https://github.com/JoelMaciel/EAD-COURSE/assets/77079093/a2dd17f6-f001-4350-9698-779858d7b7c9)
+![Captura de tela de 2023-11-12 20-41-51](https://github.com/JoelMaciel/EAD-COURSE/assets/77079093/22b1d265-8b0b-4adf-8dca-b07229710965)
+
+
+
 #### Get All Courses
 ![Captura de tela de 2023-10-14 10-02-30](https://github.com/JoelMaciel/EAD-COURSE/assets/77079093/ca057d29-2883-48f8-9e71-ceb7babd3312)
 
