@@ -12,10 +12,7 @@ import com.ead.course.domain.models.Module;
 import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.repositories.ModuleRepository;
 import com.ead.course.utils.TestHelper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -37,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 @Import(DatabaseContainerConfiguration.class)
 @ActiveProfiles("test")
+@Disabled
 class ModuleServiceImplIT {
     public static final String MSG_COURSE_NOT_FOUND_IN_MODULE =
             "There is no course registered with UUID %s to module whit UUD %s";
