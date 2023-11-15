@@ -1,17 +1,25 @@
 package com.ead.course.domain.services.impl;
 
 import com.ead.course.api.dtos.request.CourseRequest;
+import com.ead.course.api.dtos.request.CourseUserRequest;
 import com.ead.course.api.dtos.response.CourseDTO;
+import com.ead.course.api.dtos.response.CourseUserDTO;
 import com.ead.course.api.specification.SpecificationTemplate;
 import com.ead.course.containers.DatabaseContainerConfiguration;
 import com.ead.course.domain.enums.CourseLevel;
 import com.ead.course.domain.enums.CourseStatus;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
+import com.ead.course.domain.exceptions.UserNotFoundException;
 import com.ead.course.domain.models.Course;
+import com.ead.course.domain.models.CourseUser;
+import com.ead.course.domain.models.User;
 import com.ead.course.domain.repositories.CourseRepository;
 import com.ead.course.domain.repositories.CourseUserRepository;
+import com.ead.course.domain.repositories.UserRepository;
 import com.ead.course.domain.services.UserService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -39,26 +47,29 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @Testcontainers
 @Import(DatabaseContainerConfiguration.class)
-@Disabled
 class CourseServiceImplIT {
 
-    public static final String MSG_INVALID_COURSEID = "There is no course registered with UUID %s";
+    public static final String MSG_INVALID_COURSE_ID = "There is no course registered with UUID %s";
+    public static final String MSG_INVALID_USER_ID = "There is no course registered with UUID %s";
     private static final String BASE_TEST_COURSE_NAME = "Test Course ";
     private static final int PAGE_SIZE = 10;
+    public static final String MSG_USER_NOT_FOUND = "There is no user registered with UUID %s";
     @Autowired
     private CourseServiceImpl courseService;
     @Autowired
     private UserService userService;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private CourseRepository courseRepository;
 
     @Autowired
     private CourseUserRepository courseUserRepository;
-
     private CourseRequest courseRequest;
     private Course course;
     private Specification<Course> spec;
     private Pageable pageable;
+
 
     @BeforeEach
     void setUp() {
@@ -87,10 +98,6 @@ class CourseServiceImplIT {
                 .build();
     }
 
-    @AfterEach
-    void tearDown() {
-        courseRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("Given Courses Exist When Calling FindAll Then Return Page of CoursesDTOs Successfully")
@@ -102,7 +109,7 @@ class CourseServiceImplIT {
         assertNotNull(savedCourse.getCourseId());
 
         long count = courseRepository.count();
-        assertEquals(1, count);
+        assertEquals(11, count);
 
         Page<CourseDTO> courseDTOS = courseService.findAll(spec, pageable, userId);
 
@@ -128,7 +135,6 @@ class CourseServiceImplIT {
     }
 
     @Test
-    @Disabled
     @DisplayName("Given Valid CourseRequest When Calling Save Then It Should Save and Return CourseDTO Successfully")
     void givenValidCourseRequest_WhenCallingSave_ThenReturnSavedCourseDTO() {
         UUID userIdInstructor = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
@@ -197,11 +203,54 @@ class CourseServiceImplIT {
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.update(invalidCourseId, updateRequest));
 
-        String expectedMessage = String.format(MSG_INVALID_COURSEID, invalidCourseId);
+        String expectedMessage = String.format(MSG_INVALID_COURSE_ID, invalidCourseId);
         String actualMessage = exception.getMessage();
 
         assertEquals(actualMessage, expectedMessage);
     }
+
+    @Test
+    @DisplayName("When Checking Existing Subscription Then Should Return True")
+    void givenValidCourseIdAndUserId_WhenCheckingExistingSubscriptionThenShouldReturnTrue() {
+        UUID userId = UUID.fromString("99735306-994d-46f9-82a7-4116145a5678");
+        UUID courseId = UUID.fromString("70754308-6ba1-469c-8de8-c3e7e28dc404");
+
+        Course course = courseService.searchById(courseId);
+        User user = userService.searchById(userId);
+
+        CourseUser courseUser = CourseUser.builder()
+                .course(course)
+                .user(user)
+                .build();
+
+        CourseUserDTO courseUserDTO = CourseUserDTO.toDTO(courseUserRepository.save(courseUser));
+
+        assertNotNull(courseUserDTO, "The saved CourseUser should not be null");
+        assertNotNull(courseUserDTO.getId(), "The saved CourseUser should have an ID");
+
+        assertEquals(course.getCourseId(), courseUserDTO.getCourse().getCourseId(), "The course ID should match the saved CourseUser's course ID");
+        assertEquals(user.getUserId(), courseUserDTO.getUserId(), "The user ID should match the saved CourseUser's user ID");
+    }
+
+    @Test
+    @DisplayName("Given Nonexistent UserId When Saving Subscription Then Should Throw UserNotFoundException")
+    void givenNonexistentUserId_WhenSavingSubscription_ThenThrowUserNotFoundException() {
+        UUID nonexistentUserId = UUID.randomUUID();
+        UUID courseId = UUID.fromString("70754308-6ba1-469c-8de8-c3e7e28dc404");
+
+        Course course = courseService.searchById(courseId);
+        CourseUserRequest courseUserRequest = CourseUserRequest.builder()
+                .courseId(courseId)
+                .userId(nonexistentUserId)
+                .build();
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> courseService.saveSubscriptionUserInCourse(courseId, courseUserRequest));
+
+        String expectedMessage = String.format(MSG_USER_NOT_FOUND, nonexistentUserId);
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
 
     @Test
     @DisplayName("Given Valid CourseId When Calling Delete Then Course Should Be Deleted Successfully")
@@ -226,7 +275,7 @@ class CourseServiceImplIT {
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.delete(invalidCourseId));
 
-        String expectedMessage = String.format(MSG_INVALID_COURSEID, invalidCourseId);
+        String expectedMessage = String.format(MSG_INVALID_COURSE_ID, invalidCourseId);
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
