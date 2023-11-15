@@ -8,7 +8,9 @@ import com.ead.course.domain.enums.CourseStatus;
 import com.ead.course.domain.enums.UserType;
 import com.ead.course.domain.exceptions.CourseNotFoundException;
 import com.ead.course.domain.models.Course;
+import com.ead.course.domain.models.User;
 import com.ead.course.domain.repositories.CourseRepository;
+import com.ead.course.domain.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -32,12 +34,10 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CourseServiceImplTest {
-
     @Mock
     private CourseRepository courseRepository;
-
-
-
+    @Mock
+    private UserService userService;
     @InjectMocks
     private CourseServiceImpl courseService;
 
@@ -112,14 +112,14 @@ class CourseServiceImplTest {
         verify(courseRepository, times(1)).findById(courseId);
     }
 
-    @DisplayName("Given CourseRequest When Calling Save Then Return CourseDTO Successfully")
-    @Disabled
     @Test
+    @DisplayName("Given CourseRequest When Calling Save Then Return CourseDTO Successfully")
     void givenCourseRequest_WhenCallingSave_ThenReturnCourseDTOSuccessfully() {
+        User mockUser = new User();
+        mockUser.setUserType(UserType.INSTRUCTOR.toString());
+        mockUser.setUserId(courseRequestOne.getUserInstructor());
 
-//        UserDTO userDTO = new UserDTO();
-//        userDTO.setUserType(UserType.INSTRUCTOR);
-//        when(authUserClient.getOneUserById(any(UUID.class))).thenReturn(userDTO);
+        when(userService.searchById(courseRequestOne.getUserInstructor())).thenReturn(mockUser);
 
         when(courseRepository.save(any(Course.class))).thenReturn(courseOne);
 
@@ -130,6 +130,8 @@ class CourseServiceImplTest {
         assertEquals(courseRequestOne.getDescription(), courseDTO.getDescription());
         assertEquals(courseRequestOne.getImageUrl(), courseDTO.getImageUrl());
         assertEquals(courseRequestOne.getCourseStatus(), courseDTO.getCourseStatus());
+
+        verify(userService, times(1)).searchById(courseRequestOne.getUserInstructor());
         verify(courseRepository, times(1)).save(any(Course.class));
     }
 
@@ -171,7 +173,6 @@ class CourseServiceImplTest {
     }
 
     @DisplayName("Given Valid CourseId When Calling Delete Then It Should Delete Course Successfully")
-    @Disabled
     @Test
     void givenValidCourseId_WhenCallingDelete_ThenItShouldDeleteCourseSuccessfully() {
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(courseOne));

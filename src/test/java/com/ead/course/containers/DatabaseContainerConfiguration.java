@@ -9,7 +9,7 @@ public class DatabaseContainerConfiguration {
 
     @Container
     public static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("ead_course_test")
+            .withDatabaseName("ead_course_two_test")
             .withUsername("root")
             .withPassword("root");
 

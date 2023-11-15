@@ -156,3 +156,5 @@ l
 <src/main/java/com/ead/course/api/consumers/UserConsumer.java,7/3/73364869b919976c6bcf8c223b1318f9bfca6104
 m
 =src/main/java/com/ead/course/api/dtos/event/UserEventDTO.java,7/a/7a32b0fc51c1a3349f0d14d33cc4a75331b6a38a
+j
+:src/main/java/com/ead/course/domain/models/CourseUser.java,1/4/14db01482df7b4db242535e0f8625d64033be1ea
