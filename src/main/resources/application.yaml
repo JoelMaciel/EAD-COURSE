@@ -1,15 +1,72 @@
-server:
-  port: 8082
-  servlet:
-    context-path: '/ead-course/'
+#server:
+#  port: 8082
+#  servlet:
+#    context-path: '/ead-course/'
 
 spring:
   application:
     name: ead-course-service
-  profiles:
-    active: dev
-
-logging:
-  level:
-    root: INFO
-    org.springframework.web: DEBUG
+  config:
+    import: 'configserver:'
+  cloud:
+    config:
+      discovery:
+        serviceId: ead-config-server
+#  datasource:
+#    url: jdbc:mysql://localhost:3307/ead_course_two?createDatabaseIfNotExist=true&serverTimezone=UTC
+#    username: root
+#    password: root
+#
+#  flyway:
+#    locations: classpath:db/migration,classpath:db/testdata
+#
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+#        ddl-auto: none
+#        jdbc:
+#          lob.non-contextual-creation : true
+#
+#  jackson:
+#    deserialization:
+#      fail-on-unknown-properties: true
+#      fail-on-ignored-properties: true
+#
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#
+#  web:
+#    resources:
+#      add-mappings: false
+#
+#ead:
+#  api:
+#    url:
+#      authuser: 'http://ead-authuser-service/ead-authuser'
+#  broker:
+#    exchange:
+#      userEventExchange: ead.userevent
+#    queue:
+#      userEventQueue:
+#        name: ead.userevent.ms.course
+#
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: 'http://localhost:8761/eureka'
+#  instance:
+#    hostname: localhost
+#
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#
+#logging:
+#  level:
+#    root: INFO
+#    org.springframework.web: DEBUG
+#
